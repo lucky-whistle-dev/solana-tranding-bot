@@ -12,11 +12,11 @@ To learn more about the design and algorithm chosen, check [Design](./Design.md)
 
 ## Setup
 
+**Ensure that the following are installed on target machine**
+
+`node.js` - install the latest node.js [here](https://nodejs.org/en).
+
 ### Installation
-
-Ensure that the following are installed on target machine:
-
-`node.js` - install the latest node.js [here](https://nodejs.org/en)
 
 In the `root` of the project if `node.js` packages have not been installed:
 ```bash
