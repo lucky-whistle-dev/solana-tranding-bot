@@ -26,16 +26,9 @@ export class PollRoute extends BaseRoute {
 
   private poll(req: Request, res: Response, next: NextFunction) {
     this.log.custom(routeMappings.poll.subRouteMappings.root.customConsoleMessages[0], true);
-    res
-      .status(200)
-      .send({ alive: 'okay' });
+    res.status(200).send({ alive: 'okay' });
   }
 
-  async validateRoute(req: Request, res: Response, next: NextFunction): Promise<boolean> {
-    return true;
-  }
-
-  async performRouteAction(opts, req: Request, res: Response, next: NextFunction) {
-    return true;
-  }
+  validateRoute = async (req: Request, res: Response, next: NextFunction): Promise<boolean> => true;
+  performRouteAction = async (opts, req: Request, res: Response, next: NextFunction): Promise<void> => null;
 }

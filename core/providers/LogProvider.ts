@@ -1,7 +1,6 @@
 import {
-  CustomMessageWrap, Message,
-  BASE, ERROR, WARN, INFO, DEBUG, TIMER, STATUSOK
-} from '@core/models/ILog';
+  CustomMessageWrap, Message, BASE, ERROR, WARN, INFO, DEBUG, TIMER, STATUSOK
+} from '@core/types/ILog';
 
 
 /*
@@ -15,23 +14,14 @@ export class LogProvider {
   
   constructor(private baseName: string) {}
 
-  debug(message: Message) {
-    this.log(BASE(this.formatBaseName()), DEBUG(message));
-  }
+  debug = (message: Message) => this.log(BASE(this.formatBaseName()), DEBUG(message));
+  info = (message: Message) => this.log(BASE(this.formatBaseName()), INFO(message));
+  warn = (message: Message) => this.log(BASE(this.formatBaseName()), WARN(message));
+  error = (message: Message) => this.log(BASE(this.formatBaseName()), ERROR(message));
+  logTable = (data: any, fields?: string[]) => this.table(data, fields);
+  newLine = () => this.log();
 
-  info(message: Message) {
-    this.log(BASE(this.formatBaseName()), INFO(message));
-  }
-
-  warn(message: Message) {
-    this.log(BASE(this.formatBaseName()), WARN(message));
-  }
-
-  error(message: Message) {
-    this.log(BASE(this.formatBaseName()), ERROR(message));
-  }
-
-  success(message: Message) {
+  success = (message: Message) => {
     this.log(BASE(this.formatBaseName()), INFO(message), STATUSOK('[SUCCESS]'));
   }
 
@@ -42,13 +32,11 @@ export class LogProvider {
       INFO(`Time Elapsed In Milliseconds: ${TIMER(elapsedTime)}`)
     );
   }
-
-  newLine() {
-    this.log();
-  }
   
   boolean(bool: boolean) {
-    bool ? this.log(BASE(this.formatBaseName()), STATUSOK(bool)) : this.log(BASE(this.formatBaseName()), ERROR(false));
+    bool 
+    ? this.log(BASE(this.formatBaseName()), STATUSOK(bool)) 
+    : this.log(BASE(this.formatBaseName()), ERROR(false));
   }
 
   custom(message: CustomMessageWrap, newLine?: boolean) {
@@ -60,10 +48,6 @@ export class LogProvider {
     this.log(BASE(this.formatBaseName()), finalMessage);
   }
 
-  logTable(data: any, fields?: string[]) {
-    this.table(data, fields);
-  }
-
   json(json: any) {
     const stringifiedJson = Object.keys(json).map(key => [ INFO(`{ ${key}: ${BASE(json[key])} }`), ])
       .join('');
@@ -71,7 +55,5 @@ export class LogProvider {
     this.log(stringifiedJson);
   }
 
-  private formatBaseName(): string {
-    return `[${this.baseName.toUpperCase()}]: `;
-  }
+  private formatBaseName = (): string => `[${this.baseName.toUpperCase()}]: `;
 }

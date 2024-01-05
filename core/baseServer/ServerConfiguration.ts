@@ -1,4 +1,4 @@
-import { ServerConfigurations, ServerConfiguration } from '@core/baseServer/core/models/ServerConfiguration';
+import { ServerConfigurations, ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
 
 
 export const serverConfiguration: ServerConfigurations<Record<string, ServerConfiguration>> = {

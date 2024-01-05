@@ -1,4 +1,4 @@
-import { ICustomMessage, CustomMessage } from '@core/models/ILog';
+import { ICustomMessage, CustomMessage } from '@core/types/ILog';
 
 
 export interface BaseRoute {

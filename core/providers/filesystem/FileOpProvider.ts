@@ -25,7 +25,6 @@ export class FileOpProvider {
   async mkdir(path: string): Promise<boolean> {
     try { 
       await asyncMkdir(path);
-
       return true;
     } catch (err) { throw err; }
   }

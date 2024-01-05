@@ -17,9 +17,7 @@ export interface ICustomMessage<T> {
   color: T;
 }
 
-export type CustomMessage<T> = {
-  [ K in keyof T ]: T[K]
-}
+export type CustomMessage<T> = { [ K in keyof T ]: T[K] }
 
 export type CustomMessageWrap = CustomMessage<Record<string, ICustomMessage<Function>>>;
 

@@ -1,6 +1,4 @@
-import { 
-  Response, Router, Request, NextFunction 
-} from 'express';
+import { Response, Router, Request, NextFunction } from 'express';
 
 
 export interface RouteOpts {
@@ -15,27 +13,24 @@ export interface RouteOpts {
 export abstract class BaseRoute {
   protected name: string;
   protected router: Router;
-  protected rootpath: string;
   
-  constructor(rootpath: string) {
-    this.rootpath = rootpath;
+  constructor(protected rootpath: string) {
     this.router = Router();
   }
 
-  protected async pipeRequest(opts: RouteOpts, req: Request, res: Response, next: NextFunction, params: any): Promise<boolean> {
+  protected async pipeRequest(
+    opts: RouteOpts, req: Request, res: Response, next: NextFunction, params: any
+  ): Promise<boolean> {
     const validated = await this.validateRoute(req, res, next);
     if (validated) { 
       await this.performRouteAction(opts, req, res, next, params);
       return true;
     } else {
-      res
-      .status(403)
-      .send({ err: 'unauthorized on route' });
-
+      res.status(403).send({ err: 'unauthorized on route' });
       return false;
     }
   }
 
   abstract validateRoute(req: Request, res: Response, next: NextFunction): Promise<boolean>;
-  abstract performRouteAction(opts: RouteOpts, req: Request, res: Response, next: NextFunction, params: any);
+  abstract performRouteAction(opts: RouteOpts, req: Request, res: Response, next: NextFunction, params: any): Promise<void>;
 }

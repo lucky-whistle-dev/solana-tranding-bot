@@ -1,6 +1,4 @@
-export type ServerConfigurations<T> = {
-  [ K in keyof T ]: ServerConfiguration
-}
+export type ServerConfigurations<T> = { [ K in keyof T ]: ServerConfiguration };
 
 export interface ServerConfiguration {
   port: number;

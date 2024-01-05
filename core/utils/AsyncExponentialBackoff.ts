@@ -1,34 +1,26 @@
-import { got } from 'got';
-
 import { sleep, extractErrorMessage } from '@core/utils/Utils';
 import { LogProvider } from '@core/providers/LogProvider';
+import { AsyncExponentialBackoff, BackoffRequestType } from '@core/types/AsyncExponentialBackoff';
 
 
 const zLog = new LogProvider('Async Exponential Backoff');
 
-export async function asyncExponentialBackoff(
-  endpoint: string,
-  retries: number, 
-  timeout: number,
-  options: any,
-  depth = 1): Promise<any> {
+export const asyncExponentialBackoff: AsyncExponentialBackoff = async <T extends BackoffRequestType>(
+  endpoint: string, retries: number, timeout: number, request: T, depth = 1
+): Promise<Response> => {
   try {
     if (depth > retries) throw new Error(`Exceeded Max Retries: ${retries}`);
-    
-    const resp = await got.post(endpoint, options);
-    return resp.body;
+    return fetch(endpoint, request);
   } catch (err) {
+    zLog.error(extractErrorMessage(err));
     if (depth > retries) throw err;
-    else {
-      zLog.error(`Error Stack ${extractErrorMessage(err)}\n`);
-      const newTimeout = 2 ** (depth - 1) * timeout;
+    
+    const updatedTimeout = ((): number => 2 ** (depth - 1) * timeout)();
+    await sleep(updatedTimeout);
 
-      zLog.info(`Moving to attempt: ${depth}`);
-      zLog.info(`Waiting for: ${newTimeout}ms\n`);
+    zLog.info(`Waited for: ${updatedTimeout}ms`);
+    zLog.info(`Moving to attempt: ${depth + 1}`);
 
-      await sleep(newTimeout);
-
-      return await asyncExponentialBackoff(endpoint, retries, timeout, options, depth + 1);
-    }
+    return asyncExponentialBackoff(endpoint, retries, updatedTimeout, request, depth + 1);
   }
-}
+};

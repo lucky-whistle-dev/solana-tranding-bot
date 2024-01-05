@@ -1,4 +1,4 @@
-import { BASE, STATUSOK, CustomMessageWrap } from '@core/models/ILog';
+import { BASE, STATUSOK, CustomMessageWrap } from '@core/types/ILog';
 
 
 export interface IIndividualTimerMap {
@@ -7,20 +7,16 @@ export interface IIndividualTimerMap {
   elapsedInMs: number;
 }
 
-export type TimerMap<T> = {
-  [ K in keyof T ]: T[K] 
-}
+export type TimerMap<T> = { [ K in keyof T ]: T[K] };
 
 export interface ITimerMap {
   baseName: string;
   timerMap: TimerMap<Record<string, IIndividualTimerMap>>;
 }
 
-export function elapsedTimeInMs(start: Date, stop: Date): number {
-  return stop.getTime() - start.getTime();
-}
+export const elapsedTimeInMs = (start: Date, stop: Date): number => stop.getTime() - start.getTime();
 
-export function customTimerMessage(message: string): CustomMessageWrap {
+export const customTimerMessage = (message: string): CustomMessageWrap => {
   return {
     1: {
       text: '[INITIALIZE] =>',

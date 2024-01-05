@@ -43,22 +43,15 @@ export abstract class BaseServer {
   private routes: any[] = [ new PollRoute(routeMappings.poll.name) ];
   protected zLog: LogProvider;
 
-  constructor(
-    name: string, private port: number = 8000, private version: string = '0.1', numOfCpus?: number
-  ) {
+  constructor(name: string, private port: number = 8000, private version: string = '0.1', numOfCpus?: number) {
     this.name = name;
     this.zLog = new LogProvider(this.name);
     //  default values
     if (numOfCpus) this.numOfCpus = numOfCpus;
   }
 
-  getIp() {
-    return this.ip;
-  }
-
-  setRoutes(routes: any[]) {
-    this.routes = this.routes.concat(routes);
-  }
+  getIp = () => this.ip;
+  setRoutes = (routes: any[]) => this.routes = this.routes.concat(routes);
 
   async startServer() {
     try {
@@ -106,9 +99,7 @@ export abstract class BaseServer {
   private initApp() {
     try {
       this.app = express();
-    } catch (err) {
-      throw Error(`error initializing app => ${extractErrorMessage(err as Error)}`);
-    }
+    } catch (err) {throw Error(`error initializing app => ${extractErrorMessage(err as Error)}`); }
   }
 
   private initMiddleware() {
@@ -122,9 +113,7 @@ export abstract class BaseServer {
       this.app.use(e.static(path.join(__dirname, 'public')));
       this.app.use(compression());
       this.app.use(helmet());
-    } catch (err) {
-      throw Error(`error initializing middleware => ${extractErrorMessage(err as Error)}`);
-    }
+    } catch (err) { throw Error(`error initializing middleware => ${extractErrorMessage(err as Error)}`); }
   }
 
   private initRoutes() {
@@ -134,30 +123,19 @@ export abstract class BaseServer {
         this.zLog.info(`Route: ${route.name} initialized on Worker ${process.pid}.`);
       }
 
-      this.app.use( (req, res, next) => {
-        next(createError(404));
-      });
-
-      this.app.use( (err, req, res, next) => {
-        res.status(err.status || 500).json({ error: err.message });
-      });
-    } catch (err) {
-      throw Error(`error initializing routes => ${extractErrorMessage(err as Error)}`);
-    }
+      this.app.use( (req, res, next) => next(createError(404)));
+      this.app.use( (err, req, res, next) => res.status(err.status || 500).json({ error: err.message }));
+    } catch (err) { throw Error(`error initializing routes => ${extractErrorMessage(err as Error)}`); }
   }
 
   private setUpServer() {
-    this.app.listen(this.port, () => {
-      this.zLog.info(`Server ${process.pid} @${this.ip} listening on port ${this.port}...`);
-    });
+    this.app.listen(this.port, () => this.zLog.info(`Server ${process.pid} @${this.ip} listening on port ${this.port}...`));
   }
 
   private setUpWorkers() {
     const fork = () => {
       const f = cluster.fork();
-      f.on('message', message => {
-        this.zLog.debug(message);
-      });
+      f.on('message', message => this.zLog.debug(message));
     }
 
     this.zLog.info(`Server @${this.ip} setting up ${this.numOfCpus} CPUs as workers.\n`);
@@ -166,10 +144,7 @@ export abstract class BaseServer {
       fork();
     }
 
-    cluster.on('online', worker => {
-      this.zLog.info(`Worker ${worker.process.pid} is online.`);
-    });
-
+    cluster.on('online', worker => this.zLog.info(`Worker ${worker.process.pid} is online.`));
     cluster.on('exit', (worker, code, signal) => {
       this.zLog.error(`Worker ${worker.process.pid} died with code ${code} and ${signal}.`);
       this.zLog.warn('Starting new worker...');
@@ -181,9 +156,7 @@ export abstract class BaseServer {
   static setIp(zLog: LogProvider): string {
     try {
       return Object.keys(os.networkInterfaces()).map(key => {
-        if (/(eth[0-9]{1}|enp[0-9]{1}s[0-9]{1})/.test(key)) {
-          return os.networkInterfaces()[key][0].address;
-        }
+        if (/(eth[0-9]{1}|enp[0-9]{1}s[0-9]{1})/.test(key)) return os.networkInterfaces()[key][0].address;
       }).filter(el => el)[0];
     } catch (err) {
       zLog.error(`Unable to select network interface: ${err}`);

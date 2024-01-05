@@ -1,6 +1,6 @@
 import { freemem } from 'os';
 import lodash from 'lodash';
-const { isEqual, cloneDeepWith } = lodash;
+const { isEqual } = lodash;
 
 
 export const toMs = {
@@ -44,9 +44,7 @@ export const wrapAsync = async (func: Function, ...params) => {
 
 export const extractErrorMessage = (err: Error): string => err.message;
 
-const HTTP_HEADERS = {
-  'Content-Type': 'application/json'
-}
+const HTTP_HEADERS = { 'Content-Type': 'application/json' }
 
 export const generatePostRequest = (opts: any) => {
   return {
@@ -54,4 +52,4 @@ export const generatePostRequest = (opts: any) => {
     header: HTTP_HEADERS,
     body: JSON.stringify(opts)
   }
-}
+};

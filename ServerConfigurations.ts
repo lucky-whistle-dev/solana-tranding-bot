@@ -1,6 +1,6 @@
 import { 
   ServerConfigMapping, ServerConfigurations,ServerConfiguration 
-} from '@core/baseServer/core/models/ServerConfiguration';
+} from '@core/baseServer/core/types/ServerConfiguration';
 
 
 export const systems: ServerConfigurations<Record<string, ServerConfiguration>> = {

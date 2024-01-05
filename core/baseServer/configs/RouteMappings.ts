@@ -1,5 +1,5 @@
-import { ROUTE, STATUSOK, INFO } from '@core/models/ILog';
-import { BaseRoute } from '@core/baseServer/core/models/RouteMappings';
+import { ROUTE, STATUSOK, INFO } from '@core/types/ILog';
+import { BaseRoute } from '@core/baseServer/core/types/RouteMappings';
 
 
 /*
