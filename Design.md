@@ -91,7 +91,7 @@ func execute_order(asset, price, ema7, ema50, trend7, trend50, targetGain, maxLo
     // indicates weak upward momentum
 
     if asset is owned:
-      else if ABS_VALUE | trend7 | < trend50 && price deviates below mean:
+      if ABS_VALUE | trend7 | < trend50 && price deviates below mean:
         // the 7 day trend rate of change is increasing faster than the 50 day trend rate of change
         buy
       else:
