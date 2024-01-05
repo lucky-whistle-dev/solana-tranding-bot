@@ -135,8 +135,8 @@ The below algorithm will use a continuous stream of data for a particular asset:
 ```
 func price_listener(asset):
   for price of incoming prices until asset is removed:
-    { ema7, ema 50 } = calculate ema for 7 and 50 day
-    { trend7, trend 50 } = calculate trend for 7 and 50 day
+    { ema7, ema50 } = calculate ema for 7 and 50 day
+    { trend7, trend50 } = calculate trend for 7 and 50 day
 
     execute_order(asset, price, ema7, ema50, trend7, trend50)
 
