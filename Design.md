@@ -131,7 +131,7 @@ func execute_order(asset, price, ema7, ema50, trend7, trend50, targetGain, maxLo
         reduce holding
 ```
 
-The below algorithm will use a continuous stream of data for a particular asset:
+Selected asset will be continuously listened on for updated data:
 ```
 func price_listener(asset):
   for price of incoming prices until asset is removed:
