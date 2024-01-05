@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": false,
+    "declaration": false,
+    "moduleResolution": "node",
+    "module": "es2022",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "downlevelIteration": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2022",
+      "dom"
+    ],
+    "baseUrl": "./",
+    "paths": {
+      "@core/*": ["core/*"],
+      "@solt/*": ["solt/*"],
+      "@baseServer/*": ["core/baseServer/*"]
+    }
+  }
+}
