@@ -63,7 +63,9 @@ Ensure the bot can run continuously and autonomously.
 Launch the bot.
 Closely monitor performance for the first few trading cycles.
 
-Goal: deploy algo once backtested to validate 2% daily return (7 day testing) 
+
+
+### Goal: deploy algo once backtested to validate 2% daily return (7 day testing) 
 
 Launch 10k 
 Daily maintenance and necessary adjustment until steady 
@@ -74,6 +76,7 @@ Dec 16 ‘24 end : 7,100,000 USD
 Assume Jan 18 live launch day Consider holding, taking profits, or compounding until the new year start 2025 
 333 days = 7.1 Million USDC 
 350 days = >10 Million USDC
+
 
 
 Additional algo indicators to include:
