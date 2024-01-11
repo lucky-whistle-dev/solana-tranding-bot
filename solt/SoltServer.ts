@@ -1,7 +1,7 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { AutoTradeProvider } from '@solt/providers/AutoTradeProvider';
 import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
-import { TokenSwaprovider } from '@solt/providers/token/TokenSwapProvider';
+import { TokenSwapProvider } from '@solt/providers/token/TokenSwapProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 import { RPC_ENDPOINT } from '@config/RPC';
@@ -21,7 +21,7 @@ export class SoltServer extends BaseServer {
   async startEventListeners(): Promise<void> {
     const etcdProvider = new ETCDProvider();
     const tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
-    const tokenSwapProvider = new TokenSwaprovider(RPC_ENDPOINT);
+    const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
     const autoTradeProvider: AutoTradeProvider = new AutoTradeProvider(tokenPriceProvider, tokenSwapProvider);
 
     try {

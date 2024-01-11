@@ -9,11 +9,11 @@ import { RPC_ENDPOINT } from '@config/RPC';
 import { JUP_REQUEST_HEADERS, JUP_REQUEST_METHOD, BUFF_ENCODING, JUP_BASE_API } from '@config/Jupiter';
 
 
-export class TokenSwaprovider {
+export class TokenSwapProvider {
   private conn: Connection;
   private wallet: Wallet;
 
-  constructor(private rpcEndpoint: string = RPC_ENDPOINT, private zLog: LogProvider = new LogProvider(TokenSwaprovider.name)) {
+  constructor(private rpcEndpoint: string = RPC_ENDPOINT, private zLog: LogProvider = new LogProvider(TokenSwapProvider.name)) {
     this.conn = new Connection(this.rpcEndpoint);
     // this.wallet = new Wallet(Keypair.fromSecretKey(bs58.decode(process.env.PRIVATE_KEY || '')));
   }

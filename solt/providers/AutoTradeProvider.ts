@@ -1,12 +1,12 @@
 import { LogProvider } from '@core/providers/LogProvider';
 import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
-import { TokenSwaprovider } from '@solt/providers/token/TokenSwapProvider';
+import { TokenSwapProvider } from '@solt/providers/token/TokenSwapProvider';
 import { TokenPriceObject, TokenPriceRequestPayload } from '@solt/types/TokenPrice';
 
 export class AutoTradeProvider {
   constructor(
     private tokenPriceProvider: TokenPriceProvider,
-    private tokenSwapProvider: TokenSwaprovider,
+    private tokenSwapProvider: TokenSwapProvider,
     private zLog: LogProvider = new LogProvider(AutoTradeProvider.name)
   ) {}
 
