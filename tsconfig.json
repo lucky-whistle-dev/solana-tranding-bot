@@ -23,7 +23,9 @@
     "baseUrl": "./",
     "paths": {
       "@core/*": ["core/*"],
+      "@config/*": ["config/*"],
       "@solt/*": ["solt/*"],
+      "@toolset/*": ["toolset/*"],
       "@baseServer/*": ["core/baseServer/*"]
     }
   }
