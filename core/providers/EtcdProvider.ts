@@ -53,8 +53,10 @@ export class ETCDProvider extends EventEmitter {
       this.zLog.info('leader observer started');
 
       observer.on('change', leader => {
-        this.zLog.info(`the new leader is: ${leader}`);
-        this.emitElectionEvent(ELECTION_EVENTS.elected, false);
+        if (leader !== this.hostname) { 
+          this.zLog.info(`the new leader is: ${leader}`);
+          this.emitElectionEvent(ELECTION_EVENTS.elected, false);
+        }
       });
 
       observer.on('error', err => {
