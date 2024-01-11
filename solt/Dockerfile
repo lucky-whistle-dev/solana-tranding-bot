@@ -7,6 +7,7 @@ WORKDIR /usr/src/solt
 
 COPY core ./core
 COPY solt ./solt
+COPY config ./config
 
 COPY moduleAlias.mjs \
     ServerConfigurations.ts \ 
