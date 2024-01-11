@@ -26,14 +26,12 @@
     "dotenv": "^16.3.1",
     "etcd3": "^1.1.2",
     "express": "^4.18.1",
-    "got": "12.1.0",
     "grunt": "^1.5.3",
     "grunt-ts": "^6.0.0-beta.22",
     "helmet": "^5.1.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "module-alias": "^2.2.2",
     "morgan": "^1.10.0",
     "typescript": "^4.7.4",
     "websocket": "^1.0.34"
@@ -48,10 +46,7 @@
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.0.0",
     "@types/passport-jwt": "^3.0.6",
-    "@types/websocket": "^1.0.10",
-    "@types/ws": "^8.5.10",
-    "jest": "^29.5.0",
-    "ts-jest": "^29.1.0"
+    "@types/websocket": "^1.0.10"
   },
   "_moduleAliases": {
     "@core": "./dist/core",

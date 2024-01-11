@@ -6,5 +6,3 @@
 for `rev 1`:
   
   - sol/usdc trading pair
-
-
