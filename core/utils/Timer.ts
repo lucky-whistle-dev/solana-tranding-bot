@@ -1,4 +1,4 @@
-import { BASE, STATUSOK, CustomMessageWrap } from '@core/types/ILog';
+import { BASE, STATUSOK, CustomMessageWrap } from '@core/types/Log';
 
 
 export interface IIndividualTimerMap {

@@ -1,0 +1,129 @@
+version: "3"
+
+x-variables:
+  election_timeout: &election_timeout '--election-timeout=2000'
+  heartbeat_interval: &heartbeat_interval '--heartbeat-interval=200'
+  initial_cluster: &initial_cluster '--initial-cluster=etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380'
+  initial_cluster_state: &initial_cluster_state '--initial-cluster-state=new'
+  initial_cluster_token: &initial_cluster_token '--initial-cluster-token=secrettoken'
+  listen_peer_urls: &listen_peer_urls '--listen-peer-urls=http://0.0.0.0:2380'
+  listen_client_urls: &listen_client_urls '--listen-client-urls=http://0.0.0.0:2379'
+  common_soltapi_settings: &common_soltapi_settings
+    image: soltapi-img
+    build:
+      context: .
+      dockerfile: ./solt/Dockerfile
+    ports:
+      - '1234'
+    environment:
+      - ETCDHOSTS=etcd0:2379,etcd1:2379,etcd2:2379
+      - NODE_ENV=docker
+      - NODE_OPTIONS="--max-old-space-size=4096"
+    networks:
+      api_layer:
+    healthcheck:
+      test: curl --fail http://localhost:1234/poll || kill 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+    depends_on:
+      - etcd0
+      - etcd1
+      - etcd2
+  common_etcd_settings: &common_etcd_settings
+    image: quay.io/coreos/etcd:v3.5.9
+    entrypoint: /usr/local/bin/etcd
+    ports: 
+      - '4001'
+      - '2380'
+      - '2379'
+    networks:
+      api_layer:
+
+services:
+  soltapiproxy: 
+    image: soltapiproxy-img
+    hostname: ${HOSTNAME}
+    build:
+      context: .
+      dockerfile: ./lb/Dockerfile.solt.lb
+    volumes:
+      - ./certs:/certs
+    ports: 
+      - '443:443'
+    networks:
+      api_layer:
+    depends_on:
+      - soltapi0
+      - soltapi1
+      - soltapi2
+  soltapi0:
+    <<: *common_soltapi_settings
+    container_name: soltapi0
+  soltapi1:
+    <<: *common_soltapi_settings
+    container_name: soltapi1
+  soltapi2:
+    <<: *common_soltapi_settings
+    container_name: soltapi2
+  etcd0:
+    <<: *common_etcd_settings
+    hostname: etcd0
+    container_name: etcd0
+    command:
+      - '--name=etcd0'
+      - '--advertise-client-urls=http://etcd0:2379'
+      - '--initial-advertise-peer-urls=http://etcd0:2380'
+      - *election_timeout
+      - *heartbeat_interval
+      - *initial_cluster
+      - *initial_cluster_state
+      - *initial_cluster_token
+      - *listen_client_urls
+      - *listen_peer_urls
+    volumes:
+      - etcd0:/etcd_data
+  etcd1:
+    <<: *common_etcd_settings
+    hostname: etcd1
+    container_name: etcd1
+    command:
+      - '--name=etcd1'
+      - '--advertise-client-urls=http://etcd1:2379'
+      - '--initial-advertise-peer-urls=http://etcd1:2380'
+      - *election_timeout
+      - *heartbeat_interval
+      - *initial_cluster
+      - *initial_cluster_state
+      - *initial_cluster_token
+      - *listen_client_urls
+      - *listen_peer_urls
+    volumes:
+      - etcd1:/etcd_data
+  etcd2:
+    <<: *common_etcd_settings
+    hostname: etcd2
+    container_name: etcd2
+    command:
+      - '--name=etcd2'
+      - '--advertise-client-urls=http://etcd2:2379'
+      - '--initial-advertise-peer-urls=http://etcd2:2380'
+      - *election_timeout
+      - *heartbeat_interval
+      - *initial_cluster
+      - *initial_cluster_state
+      - *initial_cluster_token
+      - *listen_client_urls
+      - *listen_peer_urls
+    volumes:
+      - etcd2:/etcd_data
+
+networks:
+  api_layer:
+    driver: bridge
+
+volumes:
+  etcd0:
+  etcd1:
+  etcd2:

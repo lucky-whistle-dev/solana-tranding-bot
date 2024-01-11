@@ -1,0 +1,1 @@
+Generate certs in this directory to get mounted by docker-compose

@@ -1,16 +1,13 @@
-import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
-import fetch from 'cross-fetch';
-import { Wallet } from '@project-serum/anchor';
 import bs58 from 'bs58';
+import fetch from 'cross-fetch';
+import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
+import { Wallet } from '@project-serum/anchor';
 
-import { SwapRequest } from '@solt/types/TokenTrade';
-import { RPC_ENDPOINT } from '@config/RPCEndpoint';
 import { LogProvider } from '@core/providers/LogProvider';
+import { SwapRequest } from '@solt/types/TokenTrade';
+import { RPC_ENDPOINT } from '@config/RPC';
+import { JUP_REQUEST_HEADERS, JUP_REQUEST_METHOD, BUFF_ENCODING, JUP_BASE_API } from '@config/Jupiter';
 
-
-const JUP_BASE_API = 'https://quote-api.jup.ag/v6';
-const METHOD = 'POST';
-const HEADERS = { 'Content-Type': 'application/json' };
 
 export class TokenSwaprovider {
   private conn: Connection;
@@ -22,16 +19,22 @@ export class TokenSwaprovider {
   }
 
   async swap(opts: { inputMint: string, outputMint: string, amount: number, slippageBps: number }): Promise<boolean> {
-    const quoteResponse = await(await fetch(RequestGenerator.quoteRequest(opts))).json();
+    const { blockhash, lastValidBlockHeight } = await this.conn.getLatestBlockhash();
+
+    const quoteReq = RequestGenerator.quoteRequest(opts);
+    const quoteResp = await fetch(quoteReq);
+    const quoteResponseJson = await quoteResp.json();
     
-    const { url, request } = RequestGenerator.swapRequest({ quoteResponse, userPublicKey: this.wallet.publicKey.toString(), wrapAndUnwrapSol: true });
-    const swapResponse = await fetch(url, { method: METHOD, headers: HEADERS, body: JSON.stringify(request) });
+    const { url, request } = RequestGenerator.swapRequest({ 
+      quoteResponse: quoteResponseJson,
+      userPublicKey: this.wallet.publicKey.toString(),
+      wrapAndUnwrapSol: true
+    });
 
-    const { swapTransaction } = await swapResponse.json();
+    const swapResp = await fetch(url, { method: JUP_REQUEST_METHOD, headers: JUP_REQUEST_HEADERS, body: JSON.stringify(request) });
+    const { swapTransaction } = await swapResp.json();
 
-    const { blockhash, lastValidBlockHeight }= await this.conn.getLatestBlockhash();
-
-    const swapTransactionBuf = Buffer.from(swapTransaction, 'base64');
+    const swapTransactionBuf = Buffer.from(swapTransaction, BUFF_ENCODING);
     const vTransaction = VersionedTransaction.deserialize(swapTransactionBuf);
 
     vTransaction.sign([ this.wallet.payer ]);

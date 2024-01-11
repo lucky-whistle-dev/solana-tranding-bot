@@ -1,3 +1,7 @@
 node_modules
 dist
 .tscache
+
+certs/*.key
+certs/*.crt 
+certs/*.pem

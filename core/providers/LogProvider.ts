@@ -1,6 +1,6 @@
 import {
   CustomMessageWrap, Message, BASE, ERROR, WARN, INFO, DEBUG, TIMER, STATUSOK
-} from '@core/types/ILog';
+} from '@core/types/Log';
 
 
 /*

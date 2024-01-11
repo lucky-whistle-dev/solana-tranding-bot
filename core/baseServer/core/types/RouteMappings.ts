@@ -1,4 +1,4 @@
-import { ICustomMessage, CustomMessage } from '@core/types/ILog';
+import { ICustomMessage, CustomMessage } from '@core/types/Log';
 
 
 export interface BaseRoute {

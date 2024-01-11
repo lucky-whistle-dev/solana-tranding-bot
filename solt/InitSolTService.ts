@@ -4,7 +4,7 @@ import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
 import { TokenSwaprovider } from '@solt/providers/token/TokenSwapProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
-import { RPC_ENDPOINT } from '@config/RPCEndpoint';
+import { RPC_ENDPOINT } from '@config/RPC';
 
 
 export class InitSolTService extends BaseServer {

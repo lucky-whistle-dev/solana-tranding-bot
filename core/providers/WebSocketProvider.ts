@@ -2,13 +2,8 @@ import { EventEmitter } from 'events';
 import WebSocket from 'websocket';
 
 import { LogProvider } from '@core/providers/LogProvider';
+import { WebSocketOpts } from '@core/types/WebSocket';
 
-
-interface WebSocketOpts { 
-  endpoint: string;
-  requestedProtocols?: string;
-  origin?: string;
-}
 
 export class WebSocketProvider extends EventEmitter {  
   constructor(protected opts: WebSocketOpts, protected zLog: LogProvider) { super(); }
