@@ -1,6 +1,4 @@
-
-
-import { BaseSoltIO } from '@toolset/BaseSoltIO';
+import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
 import { PRICE_EVENT } from '@solt/types/TokenPrice';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';

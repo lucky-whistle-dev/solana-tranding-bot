@@ -1,8 +1,8 @@
-import { InitSolTService } from '@solt/InitSolTService';
+import { SoltServer } from '@solt/SoltServer';
 import { serverConfiguration } from '../ServerConfigurations';
 
 
-const server = new InitSolTService(
+const server = new SoltServer(
   serverConfiguration.basePath,
   serverConfiguration.systems.solt.name,
   serverConfiguration.systems.solt.port,

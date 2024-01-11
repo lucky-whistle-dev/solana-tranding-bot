@@ -1,6 +1,7 @@
+import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
-import { Etcd3, Lease, ILeaseKeepAliveResponse, IWatchResponse, IKeyValue, Watcher } from 'etcd3';
+import { Etcd3, Lease, ILeaseKeepAliveResponse, IWatchResponse, IKeyValue, IOptions, Watcher } from 'etcd3';
 
 import { LogProvider } from '@core/providers/LogProvider';
 import { 
@@ -17,9 +18,9 @@ export class ETCDProvider extends EventEmitter {
   private client: Etcd3;
   private zLog: LogProvider = new LogProvider(ETCDProvider.name);
 
-  constructor(private hostname = HOSTNAME) { 
+  constructor(private hostname = HOSTNAME, private opts = DEFAULT_OPTS) { 
     super();
-    this.client = new Etcd3();
+    this.client = new Etcd3(this.opts);
   }
 
   onElection = (event: ElectionEvent, listener: ElectionListener) => super.on(event, listener);
@@ -132,3 +133,13 @@ export class ETCDProvider extends EventEmitter {
   private emitElectionEvent = (event: ElectionEvent, elected: boolean) => super.emit(event, elected);
   private emitMutatedKeyEvent = (event: WatchEvent, data: IWatchResponse | IKeyValue) => super.emit(event, data);
 }
+
+
+export const DEFAULT_OPTS: IOptions = (() => {
+  const hosts: string[] = ((): string[] => {
+    const listAsString = env.ETCDHOSTS;
+    return listAsString?.split(',') ?? null;
+  })();
+
+  return { hosts };
+})();
