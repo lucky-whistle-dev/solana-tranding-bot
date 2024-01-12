@@ -12,13 +12,13 @@ export const STATUSERROR = chalk.bold.redBright;
 
 export const TIMER = chalk.greenBright;
 
-export interface ICustomMessage<T> {
+export interface CustomMessagePayload<T> {
   text: string;
   color: T;
 }
 
-export type CustomMessage<T> = { [ K in keyof T ]: T[K] }
+export type CustomMessage<T> = { [ K in keyof T ]: T[K] };
 
-export type CustomMessageWrap = CustomMessage<Record<string, ICustomMessage<Function>>>;
+export type CustomMessageWrap = CustomMessage<{ [key: number]: CustomMessagePayload<Function> }>;
 
 export type Message = any;

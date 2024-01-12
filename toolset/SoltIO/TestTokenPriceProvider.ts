@@ -1,6 +1,6 @@
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
-import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
-import { PRICE_EVENT } from '@solt/types/TokenPrice';
+import { TokenPriceProvider } from 'common/providers/token/TokenPriceProvider';
+import { PriceEvent } from '@common/types/token/TokenPrice';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
@@ -9,7 +9,7 @@ export class TestTokenPriceProvider extends BaseSoltIO {
   constructor() { super(); }
 
   async runTest(): Promise<boolean> {
-    const event: PRICE_EVENT = 'price_data';
+    const event: PriceEvent = 'price_data';
     const tpProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
     
     tpProvider.startPriceListener(event, {

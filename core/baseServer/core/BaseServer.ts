@@ -139,7 +139,6 @@ export abstract class BaseServer {
     }
 
     this.zLog.info(`Server @${this.ip} setting up ${this.numOfCpus} CPUs as workers.\n`);
-
     for(let cpu = 0; cpu < this.numOfCpus; cpu++) {
       fork();
     }

@@ -1,14 +1,14 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
-import { AutoTradeProvider } from '@solt/providers/AutoTradeProvider';
-import { TokenPriceProvider } from '@solt/providers/token/TokenPriceProvider';
-import { TokenSwapProvider } from '@solt/providers/token/TokenSwapProvider';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
-import { RPC_ENDPOINT } from '@config/RPC';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
+import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
+import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
+import { AutoTradeProvider } from '@trader/providers/AutoTradeProvider';
+import { BIRDEYE_API_KEY } from '@config/BirdEye';
+import { RPC_ENDPOINT } from '@config/RPC';
+import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
-export class SoltServer extends BaseServer {
+export class TraderServer extends BaseServer {
   constructor(private basePath: string, name: string, port?: number, version?: string, numOfCpus?: number) { 
     super(name, port, version, numOfCpus); 
   }
@@ -22,10 +22,10 @@ export class SoltServer extends BaseServer {
     const etcdProvider = new ETCDProvider();
     const tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
     const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
-    const autoTradeProvider: AutoTradeProvider = new AutoTradeProvider(tokenPriceProvider, tokenSwapProvider);
+    const autoTradeProvider: AutoTradeProvider = new AutoTradeProvider(etcdProvider, tokenPriceProvider, tokenSwapProvider);
 
     try {
-      etcdProvider.startElection(SoltServer.name);
+      etcdProvider.startElection(TraderServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
           if (elected) {

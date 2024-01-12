@@ -2,14 +2,15 @@ import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
 import { Etcd3, Lease, ILeaseKeepAliveResponse, IWatchResponse, IKeyValue, IOptions, Watcher } from 'etcd3';
+import { transform } from 'lodash';
 
 import { LogProvider } from '@core/providers/LogProvider';
 import { 
   ElectionEvent, ElectionListener, WatchEvent, WatchListener,
-  GetAllResponse, WatchRespListener, KeyValListener,
-  InitWatchOpts, KeyWatchOpts, CreateLeaseOptions,
+  InitWatchOpts, CreateLeaseOptions, GetAllResponse,
   ELECTION_EVENTS, WATCH_EVENTS, ELECTION_ERROR_TIMEOUT_IN_MS
 } from '@core/types/Etcd';
+import { EtcdSchema, ValueSerializer } from '@core/models/EtcdModel';
 
 
 const HOSTNAME = hostname();
@@ -25,9 +26,8 @@ export class ETCDProvider extends EventEmitter {
 
   onElection = (event: ElectionEvent, listener: ElectionListener) => super.on(event, listener);
 
-  onWatch(event: WatchEvent, listener: WatchListener) {
-    if (event === 'data') return super.on(event, listener as WatchRespListener);
-    return super.on(event, listener as KeyValListener);
+  onWatch<T extends WatchEvent>(event: T, listener: WatchListener<T>) {
+    return super.on(event, listener);
   }
 
   async startElection(electionName: string) {
@@ -69,7 +69,9 @@ export class ETCDProvider extends EventEmitter {
     createObserver();
   }
 
-  async startWatcher(opts: InitWatchOpts): Promise<Watcher> {
+  async startWatcher<T extends 'key' | 'prefix', K extends string = undefined, PRF extends string = undefined>(
+    opts: InitWatchOpts<T, K, PRF>
+  ): Promise<Watcher> {
     const watcher = await (async (): Promise<Watcher> => {
       if ('prefix' in opts) return this.client.watch().prefix(opts.prefix).create();
       return this.client.watch().key(opts.key).create();
@@ -79,40 +81,49 @@ export class ETCDProvider extends EventEmitter {
     watcher.on('disconnected', () => this.zLog.info('watcher disconnected'));
     watcher.on('error', err => this.zLog.error(`error on watcher: ${err.message}`));
 
-    watcher.on('data', data => this.emitMutatedKeyEvent(WATCH_EVENTS.data, data as IWatchResponse));
-    watcher.on('delete', res => this.emitMutatedKeyEvent(WATCH_EVENTS.delete, res as IKeyValue));
-    watcher.on('put', res => this.emitMutatedKeyEvent(WATCH_EVENTS.put, res as IKeyValue));
+    watcher.on('data', data => this.emitMutatedKeyEvent(WATCH_EVENTS.data, data));
+    watcher.on('delete', res => this.emitMutatedKeyEvent(WATCH_EVENTS.delete, res));
+    watcher.on('put', res => this.emitMutatedKeyEvent(WATCH_EVENTS.put, res));
 
     return watcher;
   }
 
-  async startWatcherForLeasE(watchOpts: KeyWatchOpts, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
+  async startWatcherForLease<T extends string>(watchOpts: InitWatchOpts<'key', T>, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
     await this.createLease(watchOpts.key, leaseOpts);
-    return this.startWatcher(watchOpts);
+    return this.startWatcher<'key', T>(watchOpts);
   }
 
-  async put(key: string, value: string, prefix?: string): Promise<boolean> {
-    const prefixedKey = this.generatePrefixedKey(key, prefix);
-    await this.client.put(prefixedKey).value(value);
+  async put<T extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<T, V, PRF>)['formattedKeyType'], value: (EtcdSchema<T, V, PRF>)['parsedValueType']
+  ): Promise<boolean> {
+    await this.client.put(key).value(Buffer.from(JSON.stringify(value)));
     return true;
   }
 
-  async get(key: string, prefix?: string): Promise<string> {
-    const prefixedKey = this.generatePrefixedKey(key, prefix); 
-    return this.client.get(prefixedKey).string();
+  async get<T extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<T, V, PRF>)['formattedKeyType']
+  ): Promise<(EtcdSchema<T, V, PRF>)['parsedValueType']> {
+    const buff = await this.client.get(key).buffer();
+    return ValueSerializer.deserialize(buff);
   }
 
-  async delete(key: string, prefix?: string): Promise<boolean> {
-    const prefixedKey = this.generatePrefixedKey(key, prefix);
-    await this.client.delete().key(prefixedKey);
+  async delete<T extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<T, V, PRF>)['formattedKeyType']
+  ): Promise<boolean> {
+    await this.client.delete().key(key);
     return true;
   }
 
-  async getAllForPrefix(prefix: string): Promise<GetAllResponse> {
-    return this.client.getAll().prefix(prefix).strings();
+  async getAllForPrefix<T extends string, V, PRF extends string = undefined>(
+    prefix: (EtcdSchema<T, V, PRF>)['prefix']
+  ): Promise<GetAllResponse<T, V, PRF>> {
+    const resp: { [key: string]: Buffer } = await this.client.getAll().prefix(prefix).buffers();
+    return transform(resp, (acc, curr, key) => acc[key] = ValueSerializer.deserialize(curr), {} as GetAllResponse<T, V, PRF>);
   }
 
-  async createLease(existingKey: string, opts: CreateLeaseOptions): Promise<Lease> {
+  async createLease<T extends string, V, PRF extends string = undefined>(
+    existingKey: (EtcdSchema<T, V, PRF>)['formattedKeyType'], opts: CreateLeaseOptions
+  ): Promise<Lease> {
     const lease = this.client.lease(opts.ttl, opts.opts);
     await lease.put(existingKey).exec();
     return lease;
@@ -125,11 +136,6 @@ export class ETCDProvider extends EventEmitter {
   async revokeLease(lease: Lease): Promise<boolean> {
     await lease.revoke();
     return true;
-  }
-
-  private generatePrefixedKey = (key: string, prefix?: string): string => {
-    if (prefix) return `${prefix}/${key}`;
-    return key
   }
 
   private emitElectionEvent = (event: ElectionEvent, elected: boolean) => super.emit(event, elected);

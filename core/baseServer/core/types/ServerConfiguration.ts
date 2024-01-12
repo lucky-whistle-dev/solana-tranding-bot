@@ -1,13 +1,11 @@
-export type ServerConfigurations<T> = { [ K in keyof T ]: ServerConfiguration };
-
-export interface ServerConfiguration {
+export interface ServerConfiguration<T extends string> {
   port: number;
-  name: string;
+  name: `${T} api`;
   numOfCpus: number;
   version: string;
 }
 
-export interface ServerConfigMapping { 
+export interface ServerConfigMapping<T extends string> { 
   basePath: `/${string}`; 
-  systems: ServerConfigurations<Record<string, ServerConfiguration>>;
+  systems: { [server in T]: ServerConfiguration<server> };
 }

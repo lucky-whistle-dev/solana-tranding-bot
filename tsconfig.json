@@ -24,7 +24,10 @@
     "paths": {
       "@core/*": ["core/*"],
       "@config/*": ["config/*"],
-      "@solt/*": ["solt/*"],
+      "@common/*": ["common/*"],
+      "@trader/*": ["trader/*"],
+      "@preprocessor/*": ["preprocessor/*"],
+      "@analyzer/*": ["analyzer/*"],
       "@toolset/*": ["toolset/*"],
       "@baseServer/*": ["core/baseServer/*"]
     }

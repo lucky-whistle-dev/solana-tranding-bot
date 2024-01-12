@@ -1,11 +1,13 @@
-import { ServerConfigurations, ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
+import { ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
 
 
-export const serverConfiguration: ServerConfigurations<Record<string, ServerConfiguration>> = {
+type ApplicableServers = 'baseServer';
+
+export const serverConfiguration: { [server in ApplicableServers]: ServerConfiguration<server> } = {
   baseServer: {
     port: 7890,
-    name: 'Base Server',
+    name: 'baseServer api',
     numOfCpus: 1,
     version: '0.1'
   }
-}
+};

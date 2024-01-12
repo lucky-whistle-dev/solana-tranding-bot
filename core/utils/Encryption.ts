@@ -4,14 +4,7 @@ import { LogProvider } from '@core/providers/LogProvider';
 import { extractErrorMessage } from '@core/utils/Utils';
 
 
-const CIPHER = 'aes-256-gcm';
-const ENCODINGMAP: { [encoding: string]: Encoding } = {
-  HEX: 'hex',
-  UTF8: 'utf-8',
-};
-
-
-const zLog = new LogProvider('Encryption Utils')
+const zLog = new LogProvider('Encryption Utils');
 
 export const encrypt = (data: any, secret: any, iv: any): { authTag: string, encryptedString: string } => {
   try {
@@ -36,3 +29,10 @@ export const decrypt = (data: string, secret: any, iv: any, authTag: string): st
     throw err;
   }
 }
+
+
+const CIPHER = 'aes-256-gcm';
+const ENCODINGMAP: { [encoding: string]: Encoding } = {
+  HEX: 'hex',
+  UTF8: 'utf-8',
+};

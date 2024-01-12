@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "build:all": "grunt --gruntfile gruntfile.cjs",
-    "start:solt": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/solt/StartSolTService.js --color",
-    "start:toolset": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles"
+    "start:trader": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/trader/StartTraderServer.js --color",
+    "start:preprocessor": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/preprocessor/StartPreprocessorServer.js --color",
+    "start:analyzer": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/analyzer/StartAnalyzerServer.js --color",
+    "start:toolset": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs"
   },
   "author": "Sir Gallo",
   "license": "ISC",
@@ -33,6 +34,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
+    "node-schedule": "^2.1.1",
     "typescript": "^4.7.4",
     "websocket": "^1.0.34"
   },
@@ -50,8 +52,11 @@
   },
   "_moduleAliases": {
     "@core": "./dist/core",
+    "@common": "./dist/common",
     "@config": "./dist/config",
-    "@solt": "./dist/solt",
+    "@trader": "./dist/trader",
+    "@preprocessor": "./dist/preprocessor",
+    "@analyzer": "./dist/analyzer/",
     "@toolset": "./dist/toolset",
     "@baseServer": "./dist/core/baseServer"
   }

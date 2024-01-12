@@ -1,16 +1,18 @@
-import { ICustomMessage, CustomMessage } from '@core/types/Log';
+import { CustomMessage, CustomMessagePayload } from '@core/types/Log';
 
 
-export interface BaseRoute {
-  key: string;
-  name: string;
-  subRouteMappings?: subRouteMappings;
+export type Route<T extends string, V extends string> = { [route in T]: BaseRoute<route, V> };
+
+export interface BaseRoute<T extends string, V extends string> {
+  key: T;
+  name: `/${T}` | '/';
+  subRouteMappings?: subRouteMappings<V>;
 }
 
-interface SubRouteMap {
-  key: string;
-  name: string;
-  customConsoleMessages?: CustomMessage<Record<string, ICustomMessage<Function>>>[];
+interface SubRouteMap<T extends string> {
+  key: T;
+  name: `/${T}` | '/';
+  customConsoleMessages?: CustomMessage<{ [text: string]: CustomMessagePayload<Function> }>[];
 }
 
-type subRouteMappings = Record<string, SubRouteMap>;
+type subRouteMappings<T extends string> = { [subRouteMapping in T]: SubRouteMap<subRouteMapping> };

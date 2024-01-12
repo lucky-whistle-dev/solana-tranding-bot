@@ -8,29 +8,6 @@ x-variables:
   initial_cluster_token: &initial_cluster_token '--initial-cluster-token=secrettoken'
   listen_peer_urls: &listen_peer_urls '--listen-peer-urls=http://0.0.0.0:2380'
   listen_client_urls: &listen_client_urls '--listen-client-urls=http://0.0.0.0:2379'
-  common_soltapi_settings: &common_soltapi_settings
-    image: soltapi-img
-    build:
-      context: .
-      dockerfile: ./solt/Dockerfile
-    ports:
-      - '1234'
-    environment:
-      - ETCDHOSTS=etcd0:2379,etcd1:2379,etcd2:2379
-      - NODE_ENV=docker
-      - NODE_OPTIONS="--max-old-space-size=4096"
-    networks:
-      api_layer:
-    healthcheck:
-      test: curl --fail http://localhost:1234/poll || kill 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    restart: always
-    depends_on:
-      - etcd0
-      - etcd1
-      - etcd2
   common_etcd_settings: &common_etcd_settings
     image: quay.io/coreos/etcd:v3.5.9
     entrypoint: /usr/local/bin/etcd
@@ -40,6 +17,57 @@ x-variables:
       - '2379'
     networks:
       api_layer:
+  common_api_settings: &common_api_settings
+    environment:
+      - ETCDHOSTS=etcd0:2379,etcd1:2379,etcd2:2379
+      - NODE_ENV=docker
+      - NODE_OPTIONS="--max-old-space-size=4096"
+    networks:
+      api_layer:
+    restart: always
+    depends_on:
+      - etcd0
+      - etcd1
+      - etcd2
+  common_trader_settings: &common_trader_settings
+    <<: *common_api_settings
+    image: 'trader-img'
+    build:
+      context: .
+      dockerfile: ./trader/Dockerfile
+    ports:
+      - '1234'
+    healthcheck:
+      test: curl --fail http://localhost:1234/poll || kill 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  common_preprocessor_setting: &common_preprocessor_settings
+    <<: *common_api_settings
+    image: 'preprocessor-img'
+    build:
+      context: .
+      dockerfile: ./preprocessor/Dockerfile
+    ports:
+      - '1235'
+    healthcheck:
+      test: curl --fail http://localhost:1235/poll || kill 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  common_analyzer_setting: &common_analyzer_settings
+    <<: *common_api_settings
+    image: 'analyzer-img'
+    build:
+      context: .
+      dockerfile: ./analyzer/Dockerfile
+    ports:
+      - '1236'
+    healthcheck:
+      test: curl --fail http://localhost:1236/poll || kill 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 services:
   soltapiproxy: 
@@ -55,18 +83,36 @@ services:
     networks:
       api_layer:
     depends_on:
-      - soltapi0
-      - soltapi1
-      - soltapi2
-  soltapi0:
-    <<: *common_soltapi_settings
-    container_name: soltapi0
-  soltapi1:
-    <<: *common_soltapi_settings
-    container_name: soltapi1
-  soltapi2:
-    <<: *common_soltapi_settings
-    container_name: soltapi2
+      - analyzer0
+      - analyzer1
+      - analyzer2
+  trader0:
+    <<: *common_trader_settings
+    container_name: trader0
+  trader1:
+    <<: *common_trader_settings
+    container_name: trader1
+  trader2:
+    <<: *common_trader_settings
+    container_name: trader2
+  preprocessor0:
+    <<: *common_preprocessor_settings
+    container_name: preprocessor0
+  preprocessor1:
+    <<: *common_preprocessor_settings
+    container_name: preprocessor1
+  preprocessor2:
+    <<: *common_preprocessor_settings
+    container_name: preprocessor2
+  analyzer0:
+    <<: *common_analyzer_settings
+    container_name: analyzer0
+  analyzer1:
+    <<: *common_analyzer_settings
+    container_name: analyzer1
+  analyzer2:
+    <<: *common_analyzer_settings
+    container_name: analyzer2
   etcd0:
     <<: *common_etcd_settings
     hostname: etcd0

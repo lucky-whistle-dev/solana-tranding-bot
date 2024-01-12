@@ -4,9 +4,9 @@ import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
 import { Wallet } from '@project-serum/anchor';
 
 import { LogProvider } from '@core/providers/LogProvider';
-import { SwapRequest } from '@solt/types/TokenTrade';
-import { RPC_ENDPOINT } from '@config/RPC';
+import { SwapRequest } from '@common/types/token/TokenTrade';
 import { JUP_REQUEST_HEADERS, JUP_REQUEST_METHOD, BUFF_ENCODING, JUP_BASE_API } from '@config/Jupiter';
+import { RPC_ENDPOINT } from '@config/RPC';
 
 
 export class TokenSwapProvider {

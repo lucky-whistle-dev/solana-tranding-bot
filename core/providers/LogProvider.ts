@@ -1,13 +1,6 @@
-import {
-  CustomMessageWrap, Message, BASE, ERROR, WARN, INFO, DEBUG, TIMER, STATUSOK
-} from '@core/types/Log';
+import { CustomMessageWrap, Message, BASE, ERROR, WARN, INFO, DEBUG, TIMER, STATUSOK } from '@core/types/Log';
 
 
-/*
-  Log Provider provides colored logs, as well as the ability to create custom logs
-  
-  Provide base name to constructor so that the log has a predefined location
-*/
 export class LogProvider {
   private log = console.log;
   private table = console.table;
@@ -15,10 +8,15 @@ export class LogProvider {
   constructor(private baseName: string) {}
 
   debug = (message: Message) => this.log(BASE(this.formatBaseName()), DEBUG(message));
+
   info = (message: Message) => this.log(BASE(this.formatBaseName()), INFO(message));
+
   warn = (message: Message) => this.log(BASE(this.formatBaseName()), WARN(message));
+
   error = (message: Message) => this.log(BASE(this.formatBaseName()), ERROR(message));
+
   logTable = (data: any, fields?: string[]) => this.table(data, fields);
+  
   newLine = () => this.log();
 
   success = (message: Message) => {
