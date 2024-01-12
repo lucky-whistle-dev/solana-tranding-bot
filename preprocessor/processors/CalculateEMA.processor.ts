@@ -21,10 +21,6 @@ export class CalculateEMAProcessor extends BaseProcessorProvider {
     this.tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
   }
 
-  withModel() {
-
-  }
-
   async process(): Promise<boolean> {
     const resp: GetAllResponse<HistoricalTokenStatsSchema['formattedKeyType'], HistoricalTokenStatsSchema['parsedValueType'], HistoricalTokenStatsSchema['prefix']> = 
       await this.etcProvider.getAll({ prefix: 'histTokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: 1 });
@@ -32,12 +28,12 @@ export class CalculateEMAProcessor extends BaseProcessorProvider {
     this.zLog.debug(`get all response: ${JSON.stringify(resp, null, 2)}`);
 
     const prevStatsEntry: HistoricalTokenStatsSchema['parsedValueType'] = resp[first(Object.keys(resp))];
-    const sInterval: HistoricalTokenStatsSchema['parsedValueType']['shortTermEMA']['interval'] = 7;
-    const lInterval: HistoricalTokenStatsSchema['parsedValueType']['longTermEMA']['interval'] = 50;
+    const defaultSInterval: HistoricalTokenStatsSchema['parsedValueType']['shortTermEMA']['interval'] = 7;
+    const defaultLInterval: HistoricalTokenStatsSchema['parsedValueType']['longTermEMA']['interval'] = 50;
 
     const { shortTermEMA, longTermEMA  } = prevStatsEntry 
       ? prevStatsEntry
-      : { shortTermEMA: { interval: sInterval, value: 0 }, longTermEMA: { interval: lInterval, value: 0 }}
+      : { shortTermEMA: { interval: defaultSInterval, value: 0 }, longTermEMA: { interval: defaultLInterval, value: 0 }}
     
     const prevTimeframe = prevStatsEntry ? new Date(prevStatsEntry.timestamp) : subDays(new Date(), 1);
     const currentFrame = addDays(prevTimeframe, 1);
