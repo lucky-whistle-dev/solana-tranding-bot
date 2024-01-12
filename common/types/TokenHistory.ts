@@ -1,4 +1,4 @@
-import { TokenAddress, TokenAddressType, ChartType, SupportedChain } from '@common/types/token/Token';
+import { TokenAddress, TokenAddressType, ChartType, SupportedChain } from '@common/types/Token';
 
 
 export interface TokenPriceHistoryHeaders {
@@ -11,6 +11,6 @@ export interface TokenPriceHistoryOpts {
   address: TokenAddress;
   address_type: TokenAddressType;
   type: ChartType;
-  time_from: number;
-  time_to: number;
+  time_from: Date;
+  time_to: Date;
 }

@@ -1,7 +1,7 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
-import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
-import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
+import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
+import { TokenSwapProvider } from '@common/providers/TokenSwapProvider';
 import { AutoTradeProvider } from '@trader/providers/AutoTradeProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { RPC_ENDPOINT } from '@config/RPC';

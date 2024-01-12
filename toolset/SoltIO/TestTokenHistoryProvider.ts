@@ -1,9 +1,10 @@
+import { subDays } from 'date-fns';
+
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
-import { TokenPriceProvider } from 'common/providers/token/TokenPriceProvider';
-import { PriceEvent} from '@common/types/token/TokenPrice';
+
+import { TokenHistoryProvider } from '@common/providers/TokenHistoryProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
-import { TokenHistoryProvider } from 'common/providers/token/TokenHistoryProvider';
 
 
 export class TestTokenHistoryProvider extends BaseSoltIO {
@@ -12,14 +13,18 @@ export class TestTokenHistoryProvider extends BaseSoltIO {
   async runTest(): Promise<boolean> {
     const tpHistoryProvider = new TokenHistoryProvider(BIRDEYE_API_KEY, 'solana');
 
+    const now = new Date();
+    const sevenDaysAgo = subDays(now, 7);
+
     const resp = await tpHistoryProvider.getTokenPriceHistory({
       address: SOL_TOKEN_ADDRESS,
       address_type: 'token',
-      type: '1d',
-      time_from: 0,
-      time_to: 1
+      type: '5m',
+      time_from: sevenDaysAgo,
+      time_to: now
     });
 
+    this.zLog.debug(`resp: ${JSON.stringify(resp, null, 2)}`);
     return true;
   }
 }

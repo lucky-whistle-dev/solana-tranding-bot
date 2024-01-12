@@ -1,7 +1,7 @@
 import { LogProvider } from '@core/providers/LogProvider';
 import { WebSocketProvider } from '@core/providers/WebSocketProvider';
-import { SupportedChain } from '@common/types/token/Token';
-import { PriceEvent, TokenPriceObject, TokenPriceRequestPayload, TokenPriceResponsePayload } from '@common/types/token/TokenPrice';
+import { SupportedChain } from '@common/types/Token';
+import { PriceEvent, TokenPriceObject, TokenPriceRequestPayload, TokenPriceResponsePayload } from '@common/types/TokenPrice';
 import { BIRDEYE_SOCKET_ENDPOINT, PROTOCOL, ORIGIN } from '@config/BirdEye';
 
 

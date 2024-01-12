@@ -1,7 +1,7 @@
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
-import { calculateEMA, calculateSlope } from '@common/utils/ModelUtils';
+import { TokenSwapProvider } from '@common/providers/TokenSwapProvider';
+import { calculateEMA, calculateSlope } from '@core/utils/Math';
 import { HistoricalTokenStatsSchema } from '@common/models/HistoricalTokenStats';
 
 

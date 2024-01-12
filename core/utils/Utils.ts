@@ -1,5 +1,6 @@
 import { freemem } from 'os';
 import lodash from 'lodash';
+import { ISODateString } from '@core/types/ISODate';
 const { isEqual } = lodash;
 
 
@@ -40,11 +41,11 @@ export const wrapAsync = async (func: Function, ...params) => {
       return resolve(func(...params));
     } catch (err) { return reject(err); }
   });
-}
+};
 
 export const extractErrorMessage = (err: Error): string => err.message;
 
-const HTTP_HEADERS = { 'Content-Type': 'application/json' }
+const HTTP_HEADERS = { 'Content-Type': 'application/json' };
 
 export const generatePostRequest = (opts: any) => {
   return {
@@ -53,3 +54,7 @@ export const generatePostRequest = (opts: any) => {
     body: JSON.stringify(opts)
   }
 };
+
+export const convertISOToUnix = (isoString: ISODateString): number => {
+  return Math.floor(new Date(isoString).getTime() / 1000);
+}

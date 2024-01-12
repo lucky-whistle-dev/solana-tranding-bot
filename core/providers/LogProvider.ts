@@ -8,15 +8,10 @@ export class LogProvider {
   constructor(private baseName: string) {}
 
   debug = (message: Message) => this.log(BASE(this.formatBaseName()), DEBUG(message));
-
   info = (message: Message) => this.log(BASE(this.formatBaseName()), INFO(message));
-
   warn = (message: Message) => this.log(BASE(this.formatBaseName()), WARN(message));
-
   error = (message: Message) => this.log(BASE(this.formatBaseName()), ERROR(message));
-
   logTable = (data: any, fields?: string[]) => this.table(data, fields);
-  
   newLine = () => this.log();
 
   success = (message: Message) => {

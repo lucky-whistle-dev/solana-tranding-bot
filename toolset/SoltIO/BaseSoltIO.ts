@@ -1,4 +1,4 @@
-import { LogProvider } from "@core/providers/LogProvider";
+import { LogProvider } from '@core/providers/LogProvider';
 
 
 export abstract class BaseSoltIO {

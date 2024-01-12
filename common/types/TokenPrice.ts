@@ -1,4 +1,4 @@
-import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, ChartType, Currency } from '@common/types/token/Token';
+import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, ChartType, Currency } from '@common/types/Token';
 
 
 export type TokenPriceEvents = 'SUBSCRIBE_PRICE' | 'PRICE_DATA' | 'WELCOME';

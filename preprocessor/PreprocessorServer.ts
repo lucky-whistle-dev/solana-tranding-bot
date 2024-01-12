@@ -1,6 +1,6 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
-import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
+import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
