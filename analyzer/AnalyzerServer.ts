@@ -19,9 +19,7 @@ export class AnalyzerServer extends BaseServer {
       etcdProvider.startElection(AnalyzerServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
-          if (elected) {
-            this.zLog.info('do nothing yet, not fully implemented');
-          }
+          if (elected) this.zLog.info('do nothing yet, not fully implemented');
         } catch (err) {
           this.zLog.error(err);
           process.exit(1);
