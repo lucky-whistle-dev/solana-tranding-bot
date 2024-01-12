@@ -1,4 +1,5 @@
-import { TokenAddress, TokenAddressType, ChartType, SupportedChain } from '@common/types/Token';
+import { TokenAddressType, SupportedChain } from '@common/types/Token';
+import { BirdeyeResponse, BirdeyeTokenRequest } from './Birdeye';
 
 
 export interface TokenPriceHistoryHeaders {
@@ -7,10 +8,9 @@ export interface TokenPriceHistoryHeaders {
   'X-API-KEY': string;
 }
 
-export interface TokenPriceHistoryOpts {
-  address: TokenAddress;
+export interface TokenPriceHistoryRequest extends BirdeyeTokenRequest<'range'> {
   address_type: TokenAddressType;
-  type: ChartType;
-  time_from: Date;
-  time_to: Date;
 }
+
+type ResponseDataPayload = { items: { unixTime: number, value: number }[] };
+export interface TokenPriceHistoryResponse extends BirdeyeResponse<ResponseDataPayload> {}

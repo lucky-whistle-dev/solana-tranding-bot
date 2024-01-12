@@ -1,4 +1,5 @@
-import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, ChartType, Currency } from '@common/types/Token';
+import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, Currency, Timeframe } from '@common/types/Token';
+import { BirdeyeResponse, BirdeyeTokenRequest } from './Birdeye';
 
 
 export type TokenPriceEvents = 'SUBSCRIBE_PRICE' | 'PRICE_DATA' | 'WELCOME';
@@ -6,7 +7,7 @@ export type WebSocketQueryType = 'simple';
 
 export interface TokenPriceRequestPayload {
   queryType: WebSocketQueryType;
-  chartType: ChartType;
+  chartType: Timeframe;
   address: TokenAddress;
   currency: Currency
 }
@@ -17,7 +18,7 @@ export interface TokenPriceResponsePayload {
   l: number;
   c: number;
   eventType: TokenPricePayloadEventType;
-  type: ChartType;
+  type: Timeframe;
   unixTime: number;
   v: number;
   symbol: TokenSymbol;
@@ -28,5 +29,13 @@ export interface TokenPriceObject<T extends TokenPriceRequestPayload | TokenPric
   type: TokenPriceEvents;
   data: T;
 }
+
+export interface TokenOHLCRequest extends BirdeyeTokenRequest<'range'> {}
+
+type ResponseDataPayload = { 
+  items: Pick<TokenPriceResponsePayload, 'o' | 'h' | 'l' | 'c' | 'v' | 'address' | 'unixTime' | 'type'>[]
+};
+
+export interface TokenOHLCResponse extends BirdeyeResponse<ResponseDataPayload> {}
 
 export type PriceEvent = 'price_data';

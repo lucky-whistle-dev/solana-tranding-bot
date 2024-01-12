@@ -21,9 +21,8 @@ export type EMAData<T extends ShortInterval | LongInterval> = {
 export interface StatsEntry<SHRT extends ShortInterval = undefined, LONG extends LongInterval = undefined> {
   shortTermEMA: SHRT extends undefined ? EMAData<7> : EMAData<SHRT>;
   longTermEMA: LONG extends undefined ? EMAData<50> : EMAData<LONG>;
-  intervals: number;
   timestamp: ISODateString;
 }
 
-export type HistoricalTokenStatsSchema<SHRT extends ShortInterval = undefined, LONG extends LongInterval = undefined> = 
+export type HistoricalTokenStatsSchema<SHRT extends ShortInterval = 7, LONG extends LongInterval = 50> = 
   EtcdSchema<ISODateString, StatsEntry<SHRT, LONG>, StatsKeyPrefix>;

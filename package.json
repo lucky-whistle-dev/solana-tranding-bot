@@ -47,6 +47,7 @@
     "@types/lodash": "^4.14.182",
     "@types/morgan": "^1.9.3",
     "@types/node": "^18.0.0",
+    "@types/node-schedule": "^2.1.5",
     "@types/passport-jwt": "^3.0.6",
     "@types/websocket": "^1.0.10"
   },

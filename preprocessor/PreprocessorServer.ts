@@ -1,8 +1,6 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
-import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
+import { ScheduledPreprocessProvider } from './providers/ScheduledPreprocessProvider';
 
 
 export class PreprocessorServer extends BaseServer {
@@ -17,27 +15,13 @@ export class PreprocessorServer extends BaseServer {
 
   async startEventListeners(): Promise<void> {
     const etcdProvider = new ETCDProvider();
-    const tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
+    const schedulerProvider = new ScheduledPreprocessProvider();
 
     try {
       etcdProvider.startElection(PreprocessorServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
-          if (elected) {
-            tokenPriceProvider.startPriceListener('price_data', {
-              type: 'SUBSCRIBE_PRICE',
-              data: {
-                queryType: 'simple',
-                chartType: '5m',
-                address: SOL_TOKEN_ADDRESS,
-                currency: 'usd'
-              }
-            });
-
-            tokenPriceProvider.onPriceData('price_data', data => {
-              this.zLog.info(`price data: ${JSON.stringify(data, null, 2)}`);
-            })
-          }
+          if (elected) schedulerProvider.start();
         } catch (err) {
           this.zLog.error(err);
           process.exit(1);

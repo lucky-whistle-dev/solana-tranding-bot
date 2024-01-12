@@ -1,15 +1,16 @@
 import { convertISOToUnix } from '@core/utils/Utils';
+import { BirdeyeGetHeaders } from '@common/types/Birdeye';
 import { ISODateString } from '@core/types/ISODate';
 import { SupportedChain } from '@common/types/Token';
-import { TokenPriceHistoryHeaders, TokenPriceHistoryOpts } from '@common/types/TokenHistory';
+import { TokenPriceHistoryRequest, TokenPriceHistoryResponse } from '@common/types/TokenHistory';
 import { BIRDEYE_API_ENDPOINT } from '@config/BirdEye';
 
 
 export class TokenHistoryProvider {
   constructor(private apiKey: string, private chain: SupportedChain) {}
 
-  async getTokenPriceHistory(opts: TokenPriceHistoryOpts) {
-    const headers: TokenPriceHistoryHeaders = {
+  async getTokenPriceHistory(opts: TokenPriceHistoryRequest): Promise<TokenPriceHistoryResponse> {
+    const headers: BirdeyeGetHeaders = {
       accept: 'application/json',
       'x-chain': this.chain,
       'X-API-KEY': this.apiKey
@@ -17,14 +18,12 @@ export class TokenHistoryProvider {
 
     const options = { method: 'GET', headers };
     const resp = await fetch(RequestGenerator.priceHistoryRequest(opts), options as any);
-    const respJson = await resp.json();
-    
-    return respJson;
+    return resp.json();
   }
 }
 
 class RequestGenerator { 
-  static priceHistoryRequest = (opts: TokenPriceHistoryOpts): string => {
+  static priceHistoryRequest = (opts: TokenPriceHistoryRequest): string => {
     const time_from_unix = convertISOToUnix(opts.time_from.toISOString() as ISODateString);
     const time_to_unix = convertISOToUnix(opts.time_to.toISOString() as ISODateString);
 

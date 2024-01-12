@@ -1,10 +1,16 @@
 export type Etcd3PrefixedKey<K extends string, PRF extends string = undefined> = PRF extends undefined ? K : `${PRF}/${K}`;
 
-export type EtcdSchema<K extends string, V, PRF extends string = undefined> = {
-  formattedKeyType: Etcd3PrefixedKey<K, PRF>;
-  parsedValueType: V;
-  prefix?: PRF;
-};
+export type EtcdSchema<K extends string, V, PRF extends string = undefined> = 
+  PRF extends string 
+  ? {
+      formattedKeyType: Etcd3PrefixedKey<K, PRF>;
+      parsedValueType: V;
+      prefix: PRF;
+    }
+  : {
+    formattedKeyType: Etcd3PrefixedKey<K, PRF>;
+    parsedValueType: V;
+  };
 
 export class ValueSerializer {
   static serialize = <K extends string, V, PRF extends string = undefined>(value: (EtcdSchema<K, V, PRF>)['parsedValueType']): Buffer => {

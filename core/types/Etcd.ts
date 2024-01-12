@@ -1,4 +1,4 @@
-import { Etcd3PrefixedKey } from '@core/models/EtcdModel';
+import { Etcd3PrefixedKey, EtcdSchema } from '@core/models/EtcdModel';
 import { ILeaseOptions, IKeyValue, IWatchResponse } from 'etcd3';
 
 
@@ -24,6 +24,15 @@ export type WatchEventData<EVT extends WatchEvent> =
 export interface CreateLeaseOptions {
   ttl: number;
   opts?: ILeaseOptions;
+}
+
+export interface ETCDDataProcessingOpts<K extends string, V, PRF extends string> {
+  prefix?: (EtcdSchema<K, V, PRF>)['prefix']
+  limit?: number;
+  sort?: {
+    on: 'Create' | 'Key' | 'Value' | 'Version' | 'Mod';
+    direction: 'Ascend' | 'Descend';
+  };
 }
 
 export type GetAllResponse<K extends string, V, PRF extends string = undefined> = { [key in Etcd3PrefixedKey<K, PRF>]: V };
