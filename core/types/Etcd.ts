@@ -16,6 +16,11 @@ export type InitWatchOpts<EVT extends 'key' | 'prefix', K extends string = undef
   ? (K extends undefined ? never : { key: Etcd3PrefixedKey<K, PRF> })
   : (PRF extends undefined ? never : { prefix: PRF });
 
+export type WatchEventData<EVT extends WatchEvent> = 
+  EVT extends 'data'
+  ? IWatchResponse
+  : IKeyValue;
+
 export interface CreateLeaseOptions {
   ttl: number;
   opts?: ILeaseOptions;

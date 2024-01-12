@@ -1,14 +1,14 @@
 import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
-import { Etcd3, Lease, ILeaseKeepAliveResponse, IWatchResponse, IKeyValue, IOptions, Watcher } from 'etcd3';
+import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher } from 'etcd3';
 import lodash from 'lodash';
 const { transform } = lodash;
 
 import { LogProvider } from '@core/providers/LogProvider';
 import { 
   ElectionEvent, ElectionListener, WatchEvent, WatchListener,
-  InitWatchOpts, CreateLeaseOptions, GetAllResponse,
+  InitWatchOpts, WatchEventData, CreateLeaseOptions, GetAllResponse,
   ELECTION_EVENTS, WATCH_EVENTS, ELECTION_ERROR_TIMEOUT_IN_MS
 } from '@core/types/Etcd';
 import { EtcdSchema, ValueSerializer } from '@core/models/EtcdModel';
@@ -140,7 +140,7 @@ export class ETCDProvider extends EventEmitter {
   }
 
   private emitElectionEvent = (event: ElectionEvent, elected: boolean) => super.emit(event, elected);
-  private emitMutatedKeyEvent = (event: WatchEvent, data: IWatchResponse | IKeyValue) => super.emit(event, data);
+  private emitMutatedKeyEvent = (event: WatchEvent, data: WatchEventData<typeof event>) => super.emit(event, data);
 }
 
 

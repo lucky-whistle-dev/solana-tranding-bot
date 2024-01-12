@@ -28,7 +28,7 @@ export class PreprocessorServer extends BaseServer {
               type: 'SUBSCRIBE_PRICE',
               data: {
                 queryType: 'simple',
-                chartType: '1d',
+                chartType: '5m',
                 address: SOL_TOKEN_ADDRESS,
                 currency: 'usd'
               }

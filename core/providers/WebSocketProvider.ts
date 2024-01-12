@@ -10,7 +10,7 @@ export class WebSocketProvider extends EventEmitter {
 
   on = <EVT extends string, V>(event: EVT, listener: (data: V) => void) => super.on(event, listener);
 
-  protected startListener<EVT extends string, V, U>(event: EVT, request?: V) {
+  protected startListener<EVT extends string, U, V = undefined>(event: EVT, request?: V) {
     const wsClient = new WebSocket.client();
 
     wsClient.on('connectFailed', err => { 
