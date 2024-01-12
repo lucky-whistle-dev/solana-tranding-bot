@@ -8,9 +8,9 @@ import { WebSocketOpts } from '@core/types/WebSocket';
 export class WebSocketProvider extends EventEmitter {  
   constructor(protected opts: WebSocketOpts, protected zLog: LogProvider) { super(); }
 
-  on = <T extends string, V>(event: T, listener: (data: V) => void) => super.on(event, listener);
+  on = <EVT extends string, V>(event: EVT, listener: (data: V) => void) => super.on(event, listener);
 
-  protected startListener<T extends string, V, U>(event: T, request?: V) {
+  protected startListener<EVT extends string, V, U>(event: EVT, request?: V) {
     const wsClient = new WebSocket.client();
 
     wsClient.on('connectFailed', err => { 

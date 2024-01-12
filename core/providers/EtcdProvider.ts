@@ -2,7 +2,8 @@ import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
 import { Etcd3, Lease, ILeaseKeepAliveResponse, IWatchResponse, IKeyValue, IOptions, Watcher } from 'etcd3';
-import { transform } from 'lodash';
+import lodash from 'lodash';
+const { transform } = lodash;
 
 import { LogProvider } from '@core/providers/LogProvider';
 import { 
@@ -26,7 +27,7 @@ export class ETCDProvider extends EventEmitter {
 
   onElection = (event: ElectionEvent, listener: ElectionListener) => super.on(event, listener);
 
-  onWatch<T extends WatchEvent>(event: T, listener: WatchListener<T>) {
+  onWatch<EVT extends WatchEvent>(event: EVT, listener: WatchListener<EVT>) {
     return super.on(event, listener);
   }
 
@@ -69,8 +70,8 @@ export class ETCDProvider extends EventEmitter {
     createObserver();
   }
 
-  async startWatcher<T extends 'key' | 'prefix', K extends string = undefined, PRF extends string = undefined>(
-    opts: InitWatchOpts<T, K, PRF>
+  async startWatcher<EVT extends 'key' | 'prefix', K extends string = undefined, PRF extends string = undefined>(
+    opts: InitWatchOpts<EVT, K, PRF>
   ): Promise<Watcher> {
     const watcher = await (async (): Promise<Watcher> => {
       if ('prefix' in opts) return this.client.watch().prefix(opts.prefix).create();
@@ -88,41 +89,41 @@ export class ETCDProvider extends EventEmitter {
     return watcher;
   }
 
-  async startWatcherForLease<T extends string>(watchOpts: InitWatchOpts<'key', T>, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
+  async startWatcherForLease<K extends string>(watchOpts: InitWatchOpts<'key', K>, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
     await this.createLease(watchOpts.key, leaseOpts);
-    return this.startWatcher<'key', T>(watchOpts);
+    return this.startWatcher<'key', K>(watchOpts);
   }
 
-  async put<T extends string, V, PRF extends string = undefined>(
-    key: (EtcdSchema<T, V, PRF>)['formattedKeyType'], value: (EtcdSchema<T, V, PRF>)['parsedValueType']
+  async put<K extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<K, V, PRF>)['formattedKeyType'], value: (EtcdSchema<K, V, PRF>)['parsedValueType']
   ): Promise<boolean> {
-    await this.client.put(key).value(Buffer.from(JSON.stringify(value)));
+    await this.client.put(key).value(ValueSerializer.serialize(value));
     return true;
   }
 
-  async get<T extends string, V, PRF extends string = undefined>(
-    key: (EtcdSchema<T, V, PRF>)['formattedKeyType']
-  ): Promise<(EtcdSchema<T, V, PRF>)['parsedValueType']> {
+  async get<K extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<K, V, PRF>)['formattedKeyType']
+  ): Promise<(EtcdSchema<K, V, PRF>)['parsedValueType']> {
     const buff = await this.client.get(key).buffer();
     return ValueSerializer.deserialize(buff);
   }
 
-  async delete<T extends string, V, PRF extends string = undefined>(
-    key: (EtcdSchema<T, V, PRF>)['formattedKeyType']
+  async delete<K extends string, V, PRF extends string = undefined>(
+    key: (EtcdSchema<K, V, PRF>)['formattedKeyType']
   ): Promise<boolean> {
     await this.client.delete().key(key);
     return true;
   }
 
-  async getAllForPrefix<T extends string, V, PRF extends string = undefined>(
-    prefix: (EtcdSchema<T, V, PRF>)['prefix']
-  ): Promise<GetAllResponse<T, V, PRF>> {
+  async getAllForPrefix<K extends string, V, PRF extends string = undefined>(
+    prefix: (EtcdSchema<K, V, PRF>)['prefix']
+  ): Promise<GetAllResponse<K, V, PRF>> {
     const resp: { [key: string]: Buffer } = await this.client.getAll().prefix(prefix).buffers();
-    return transform(resp, (acc, curr, key) => acc[key] = ValueSerializer.deserialize(curr), {} as GetAllResponse<T, V, PRF>);
+    return transform(resp, (acc, curr, key) => acc[key] = ValueSerializer.deserialize(curr), {} as GetAllResponse<K, V, PRF>);
   }
 
-  async createLease<T extends string, V, PRF extends string = undefined>(
-    existingKey: (EtcdSchema<T, V, PRF>)['formattedKeyType'], opts: CreateLeaseOptions
+  async createLease<K extends string, V, PRF extends string = undefined>(
+    existingKey: (EtcdSchema<K, V, PRF>)['formattedKeyType'], opts: CreateLeaseOptions
   ): Promise<Lease> {
     const lease = this.client.lease(opts.ttl, opts.opts);
     await lease.put(existingKey).exec();

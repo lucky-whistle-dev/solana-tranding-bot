@@ -11,6 +11,7 @@ export class ExecuteTradeProvider {
   constructor(private etcdProvider: ETCDProvider, private tokenSwapProvider: TokenSwapProvider) {}
 
   async run(price: number): Promise<any> {  
+    /*
     const { prevShortTermEMA, prevLongTermEMA, prevShortTermN, prevLongTermN } = await this.getPreviousEmas();
 
     const shortTermEMA = calculateEMA(price, prevShortTermEMA, 7);
@@ -49,8 +50,10 @@ export class ExecuteTradeProvider {
     }
 
     return null;
+    */
   }
 
+  /*
   private async getPreviousEmas(): Promise<PreviousEMAsResponse> { 
     const emaPrefix = 'ema';
     const sTermEMAResp: await this.etcdProvider.get<HistoricalTokenStatsSchema['formattedKeyType'], HistoricalTokenStatsSchema['parsedValueType'], HistoricalTokenStatsSchema['prefix']>();
@@ -75,6 +78,7 @@ export class ExecuteTradeProvider {
 
     return true;
   }
+  */
 }
 
 
