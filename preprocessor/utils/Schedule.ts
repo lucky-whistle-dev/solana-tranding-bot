@@ -13,11 +13,9 @@ export const generateCycleMapForTasks = (scheduleMap: ScheduleMap): { [task in S
     },
     {} as { [task in ScheduledTasks]: NodeScheduleTimeMap }
   );
-}
+};
 
-const generateSubRecurrenceRule = (
-  subRule: RecurrenceRule, defaults: { start: number, end: number, step: number }
-): number | Range => {
+const generateSubRecurrenceRule = (subRule: RecurrenceRule, defaults: { start: number, end: number, step: number }): number | Range => {
   if (typeof subRule === 'number') return subRule;
   return new Range(
     'start' in subRule ? subRule.start : defaults.start,

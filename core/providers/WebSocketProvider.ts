@@ -17,7 +17,7 @@ export class WebSocketProvider extends EventEmitter {
       this.zLog.error(err);
       process.exit(1);
     });
-
+    
     wsClient.on('connect', conn => {
       this.zLog.info(`connection opened on websocket for: ${this.opts.endpoint}`);
       

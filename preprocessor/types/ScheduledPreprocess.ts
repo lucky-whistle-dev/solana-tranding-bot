@@ -1,5 +1,6 @@
-import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
 import { Range } from 'node-schedule';
+
+import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
 
 
 export type ScheduledTasks = 'calculateEMA';

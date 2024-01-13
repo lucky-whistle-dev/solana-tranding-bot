@@ -1,6 +1,6 @@
 export type Etcd3PrefixedKey<K extends string, PRF extends string = undefined> = PRF extends undefined ? K : `${PRF}/${K}`;
 
-export type EtcdSchema<K extends string, V, PRF extends string = undefined> = 
+export type EtcdSchema<K extends string, V = string, PRF extends string = undefined> = 
   PRF extends string 
   ? {
       formattedKeyType: Etcd3PrefixedKey<K, PRF>;

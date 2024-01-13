@@ -1,7 +1,7 @@
 import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
-import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher, MultiRangeBuilder } from 'etcd3';
+import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher, MultiRangeBuilder, Rangable } from 'etcd3';
 import lodash from 'lodash';
 const { transform } = lodash;
 
@@ -115,11 +115,12 @@ export class ETCDProvider extends EventEmitter {
     return true;
   }
 
-  async getAll<K extends string, V, PRF extends string>(opts: ETCDDataProcessingOpts<K, V, PRF>): Promise<GetAllResponse<K, V, PRF>> {
+  async getAll<K extends string, V, PRF extends string>(opts: ETCDDataProcessingOpts<K, V, PRF, 'iterate' | 'range'>): Promise<GetAllResponse<K, V, PRF>> {
     const pipeline = ((): MultiRangeBuilder => {
       let builder = this.client.getAll();
       
       if ('prefix' in opts) builder = builder.prefix(opts.prefix);
+      if ('range' in opts) builder = builder.inRange(opts.range);
       if ('sort' in opts) builder = builder.sort(opts.sort.on, opts.sort.direction)
       if ('limit' in opts) builder = builder.limit(opts.limit);
 
@@ -129,7 +130,10 @@ export class ETCDProvider extends EventEmitter {
     const resp: { [key: string]: Buffer } = await pipeline.buffers();
     return transform(
       resp,
-      (acc, curr, key) => acc[key] = ValueSerializer.deserialize<(EtcdSchema<K, V, PRF>)['formattedKeyType'], (EtcdSchema<K, V, PRF>)['parsedValueType']>(curr),
+      (acc, serialized, key) => {
+        const value = ValueSerializer.deserialize<(EtcdSchema<K, V, PRF>)['formattedKeyType'], (EtcdSchema<K, V, PRF>)['parsedValueType']>(serialized);
+        acc[key] = value;
+      },
       {} as GetAllResponse<K, V, PRF>
     );
   }

@@ -26,16 +26,22 @@ export interface CreateLeaseOptions {
   opts?: ILeaseOptions;
 }
 
-export interface ETCDDataProcessingOpts<K extends string, V, PRF extends string> {
-  prefix?: (EtcdSchema<K, V, PRF>)['prefix']
+type __baseDataProcessOpts = {
   limit?: number;
   sort?: {
     on: 'Create' | 'Key' | 'Value' | 'Version' | 'Mod';
     direction: 'Ascend' | 'Descend';
   };
-}
+};
 
-export type GetAllResponse<K extends string, V, PRF extends string = undefined> = { [key in Etcd3PrefixedKey<K, PRF>]: V };
+export type ETCDDataProcessingOpts<K extends string, V, PRF extends string, TYP extends 'iterate' | 'range' = 'iterate'> =
+  TYP extends 'iterate' 
+  ? { prefix: (EtcdSchema<K, V, PRF>)['prefix'] } & __baseDataProcessOpts
+  : TYP extends 'range'
+  ? { range: { start: (EtcdSchema<K, V>)['formattedKeyType'], end: (EtcdSchema<K, V>)['formattedKeyType'] } } & __baseDataProcessOpts
+  : never;
+
+export type GetAllResponse<K extends string, V = (string | Buffer), PRF extends string = undefined> = { [key in Etcd3PrefixedKey<K, PRF>]: V };
 
 export const ELECTION_EVENTS: { [event in ElectionEvent]: event } = { elected: 'elected' };
 export const WATCH_EVENTS: { [event in WatchEvent]: event } = { data: 'data', delete: 'delete', put: 'put' };

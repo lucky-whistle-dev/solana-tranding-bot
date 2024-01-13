@@ -2,11 +2,11 @@ import { EtcdSchema } from '@core/models/EtcdModel';
 import { ISODateString } from '@core/types/ISODate';
 
 
-export type StatsKeyPrefix = 'histTokenStats';
+export type StatsKeyPrefix = 'tokenStats';
 export type StatsKeySuffix = ISODateString;
 
-type ShortInterval = 1 | 7;
-type LongInterval = 50 | 200;
+export type ShortInterval = 1 | 7;
+export type LongInterval = 50 | 200;
 
 type TimeInterval<T extends ShortInterval | LongInterval> = 
   T extends ShortInterval
@@ -24,5 +24,5 @@ export interface StatsEntry<SHRT extends ShortInterval = undefined, LONG extends
   timestamp: ISODateString;
 }
 
-export type HistoricalTokenStatsSchema<SHRT extends ShortInterval = 7, LONG extends LongInterval = 50> = 
-  EtcdSchema<ISODateString, StatsEntry<SHRT, LONG>, StatsKeyPrefix>;
+export type TokenStatsSchema<SHRT extends ShortInterval = 7, LONG extends LongInterval = 50> = 
+  EtcdSchema<StatsKeySuffix, StatsEntry<SHRT, LONG>, StatsKeyPrefix>;
