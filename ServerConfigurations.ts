@@ -1,7 +1,7 @@
 import { ServerConfigMapping, ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
 
 
-type ApplicableSystems = 'trader' | 'preprocessor' | 'analyzer';
+type ApplicableSystems = 'trader' | 'preprocessor' | 'postprocessor';
 
 export const systems: { [server in ApplicableSystems]: ServerConfiguration<server> } = {
   trader: {
@@ -16,9 +16,9 @@ export const systems: { [server in ApplicableSystems]: ServerConfiguration<serve
     numOfCpus: 1,
     version: '0.0.1-dev'
   },
-  analyzer: {
+  postprocessor: {
     port: 1236,
-    name: 'analyzer api',
+    name: 'postprocessor api',
     numOfCpus: 1,
     version: '0.0.1-dev'
   }

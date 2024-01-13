@@ -41,17 +41,18 @@ export class TokenStatsProvider {
 
   async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'tokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 9 ? opts.limit : 1
+      prefix: 'tokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range(opts: TokenStatsProcessingOpts<'range'>): Promise<TokenStatsSchema['parsedValueType'][]> {
+  async range(opts: Pick<TokenStatsProcessingOpts<'range'>, 'range' | 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType']> = await this.etcdProvider.getAll({ 
-      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 9 ? opts.limit : 1
+      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
+    console.log('range resp:', getAllResp);
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 }

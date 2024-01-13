@@ -15,7 +15,7 @@ export class TokenSwapProvider {
 
   constructor(private rpcEndpoint: string = RPC_ENDPOINT, private zLog: LogProvider = new LogProvider(TokenSwapProvider.name)) {
     this.conn = new Connection(this.rpcEndpoint);
-    // this.wallet = new Wallet(Keypair.fromSecretKey(bs58.decode(process.env.PRIVATE_KEY || '')));
+    this.wallet = new Wallet(Keypair.fromSecretKey(bs58.decode(process.env.PRIVATE_KEY || '')));
   }
 
   async swap(opts: { inputMint: string, outputMint: string, amount: number, slippageBps: number }): Promise<boolean> {

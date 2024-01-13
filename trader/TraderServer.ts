@@ -1,8 +1,11 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
+import { AuditProvider } from '@common/providers/etcd/AuditProvider';
+import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
-import { AutoTradeProvider } from '@trader/providers/AutoTradeProvider';
+import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
+import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { RPC_ENDPOINT } from '@config/RPC';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
@@ -20,16 +23,22 @@ export class TraderServer extends BaseServer {
 
   async startEventListeners(): Promise<void> {
     const etcdProvider = new ETCDProvider();
+
+    const auditProvider = new AuditProvider(etcdProvider);
+    const tokenStatsProvider = new TokenStatsProvider(etcdProvider);
+
     const tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
     const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
-    const autoTradeProvider: AutoTradeProvider = new AutoTradeProvider(etcdProvider, tokenPriceProvider, tokenSwapProvider);
+
+    const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider).hybridtrend;
+    const autoTrader: AutoTraderProvider = new AutoTraderProvider(signalGenerator, tokenPriceProvider, tokenSwapProvider);
 
     try {
       etcdProvider.startElection(TraderServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
           if (elected) {
-            autoTradeProvider.start({
+            autoTrader.start({
               type: 'SUBSCRIBE_PRICE',
               data: {
                 queryType: 'simple',

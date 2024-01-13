@@ -2,7 +2,7 @@ import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 
 
-export class AnalyzerServer extends BaseServer {
+export class PostProcessorServer extends BaseServer {
   constructor(private basePath: string, name: string, port?: number, version?: string, numOfCpus?: number) { 
     super(name, port, version, numOfCpus); 
   }
@@ -16,7 +16,7 @@ export class AnalyzerServer extends BaseServer {
     const etcdProvider = new ETCDProvider();
 
     try {
-      etcdProvider.startElection(AnalyzerServer.name);
+      etcdProvider.startElection(PostProcessorServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
           if (elected) this.zLog.info('do nothing yet, not fully implemented');

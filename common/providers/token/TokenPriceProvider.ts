@@ -1,5 +1,6 @@
 import { LogProvider } from '@core/providers/LogProvider';
 import { WebSocketProvider } from '@core/providers/WebSocketProvider';
+import { asyncExponentialBackoff } from '@core/utils/AsyncExponentialBackoff';
 import { SupportedChain } from '@common/types/token/Token';
 import { BirdeyeGetHeaders } from '@common/types/external/Birdeye';
 import { 
@@ -33,7 +34,7 @@ export class TokenPriceProvider extends WebSocketProvider {
     };
 
     const options = { method: 'GET', headers };
-    const resp = await fetch(RequestGenerator.ohlcRequest(request), options as any);
+    const resp = await asyncExponentialBackoff(RequestGenerator.ohlcRequest(request), 5, 500, options as any);
     return resp.json();
   } 
 }

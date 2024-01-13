@@ -1,6 +1,6 @@
 type Block60 = `${number}${number}`;
 
-type ApplicableYearFormat = `${0 | 1 | 2}$0${number}${number}`;
+type ApplicableYearFormat = `${0 | 1 | 2}0${number}${number}`;
 
 type ApplicableMonthFormat = `${0 | 1}${number}`;
 type ApplicableDayFormat = `${0 | 1 | 2 | 3}${number}`;

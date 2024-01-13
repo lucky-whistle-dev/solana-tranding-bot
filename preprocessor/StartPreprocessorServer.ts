@@ -1,8 +1,8 @@
 import { serverConfiguration } from '../ServerConfigurations';
-import { PreprocessorServer } from '@preprocessor/PreprocessorServer';
+import { PreProcessorServer } from '@preprocessor/PreProcessorServer';
 
 
-const server = new PreprocessorServer(
+const server = new PreProcessorServer(
   serverConfiguration.basePath,
   serverConfiguration.systems.preprocessor.name,
   serverConfiguration.systems.preprocessor.port,

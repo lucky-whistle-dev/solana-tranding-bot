@@ -5,8 +5,8 @@
   "scripts": {
     "build:all": "grunt --gruntfile gruntfile.cjs",
     "start:trader": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/trader/StartTraderServer.js --color",
-    "start:preprocessor": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/preprocessor/StartPreprocessorServer.js --color",
-    "start:analyzer": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/analyzer/StartAnalyzerServer.js --color",
+    "start:preprocessor": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/preprocessor/StartPreProcessorServer.js --color",
+    "start:postprocessor": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs ./dist/postprocessor/StartPostProcessorServer.js --color",
     "start:toolset": "node --no-warnings --experimental-modules --es-module-specifier-resolution=node --loader ./moduleAlias.mjs"
   },
   "author": "Sir Gallo",
@@ -57,7 +57,8 @@
     "@config": "./dist/config",
     "@trader": "./dist/trader",
     "@preprocessor": "./dist/preprocessor",
-    "@analyzer": "./dist/analyzer/",
+    "@postprocessor": "./dist/postprocessor",
+    "@signals": "./dist/signals",
     "@toolset": "./dist/toolset",
     "@baseServer": "./dist/core/baseServer"
   }

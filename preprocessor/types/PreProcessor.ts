@@ -3,7 +3,7 @@ import { Range } from 'node-schedule';
 import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
 
 
-export type ScheduledTasks = 'calculateEMA';
+export type ScheduledProcessors = 'calculateEMA';
 
 export type RecurrenceRule<T extends 1 | 2 | 3 = undefined> = 
   T extends undefined
@@ -33,5 +33,5 @@ export interface NodeScheduleTimeMap {
 }
 
 export type ScheduleMap = { 
-  [key in ScheduledTasks]: { timeMap: InitTimeMap, processor: BaseProcessorProvider }
+  [key in ScheduledProcessors]: { timeMap: InitTimeMap, processor: BaseProcessorProvider }
 };

@@ -55,12 +55,12 @@ x-variables:
       interval: 30s
       timeout: 10s
       retries: 3
-  common_analyzer_setting: &common_analyzer_settings
+  common_postprocessor_setting: &common_postprocessor_settings
     <<: *common_api_settings
     image: 'analyzer-img'
     build:
       context: .
-      dockerfile: ./analyzer/Dockerfile
+      dockerfile: ./postprocessor/Dockerfile
     ports:
       - '1236'
     healthcheck:
@@ -83,9 +83,9 @@ services:
     networks:
       api_layer:
     depends_on:
-      - analyzer0
-      - analyzer1
-      - analyzer2
+      - postprocessor0
+      - postprocessor1
+      - postprocessor2
   trader0:
     <<: *common_trader_settings
     container_name: trader0
@@ -104,15 +104,15 @@ services:
   preprocessor2:
     <<: *common_preprocessor_settings
     container_name: preprocessor2
-  analyzer0:
-    <<: *common_analyzer_settings
-    container_name: analyzer0
-  analyzer1:
-    <<: *common_analyzer_settings
-    container_name: analyzer1
-  analyzer2:
-    <<: *common_analyzer_settings
-    container_name: analyzer2
+  postprocessor0:
+    <<: *common_postprocessor_settings
+    container_name: postprocessor0
+  postprocessor1:
+    <<: *common_postprocessor_settings
+    container_name: postprocessor1
+  postprocessor2:
+    <<: *common_postprocessor_settings
+    container_name: postprocessor2
   etcd0:
     <<: *common_etcd_settings
     hostname: etcd0

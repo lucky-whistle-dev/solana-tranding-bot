@@ -1,9 +1,9 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
-import { ScheduledPreprocessProvider } from './providers/ScheduledPreprocessProvider';
+import { ProcessorSchedulerProvider } from './providers/ProcessorSchedulerProvider';
 
 
-export class PreprocessorServer extends BaseServer {
+export class PreProcessorServer extends BaseServer {
   constructor(private basePath: string, name: string, port?: number, version?: string, numOfCpus?: number) { 
     super(name, port, version, numOfCpus); 
   }
@@ -15,10 +15,10 @@ export class PreprocessorServer extends BaseServer {
 
   async startEventListeners(): Promise<void> {
     const etcdProvider = new ETCDProvider();
-    const schedulerProvider = new ScheduledPreprocessProvider();
+    const schedulerProvider = new ProcessorSchedulerProvider();
 
     try {
-      etcdProvider.startElection(PreprocessorServer.name);
+      etcdProvider.startElection(PreProcessorServer.name);
       etcdProvider.onElection('elected', elected => {
         try {
           if (elected) schedulerProvider.start();

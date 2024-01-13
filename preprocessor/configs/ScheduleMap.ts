@@ -1,5 +1,5 @@
 import { CalculateEMAProcessor } from '@preprocessor/processors/CalculateEMA.processor';
-import { ScheduleMap } from '@preprocessor/types/ScheduledPreprocess';
+import { ScheduleMap } from '@preprocessor/types/PreProcessor';
 
 
 export const scheduleMap: ScheduleMap = {

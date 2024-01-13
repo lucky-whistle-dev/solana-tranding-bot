@@ -27,7 +27,8 @@
       "@common/*": ["common/*"],
       "@trader/*": ["trader/*"],
       "@preprocessor/*": ["preprocessor/*"],
-      "@analyzer/*": ["analyzer/*"],
+      "@postprocessor/*": ["postprocessor/*"],
+      "@signals/*": ["signals/*"],
       "@toolset/*": ["toolset/*"],
       "@baseServer/*": ["core/baseServer/*"]
     }

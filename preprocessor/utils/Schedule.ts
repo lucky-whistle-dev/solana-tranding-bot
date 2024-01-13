@@ -2,16 +2,16 @@ import { Range } from 'node-schedule';
 import lodash from 'lodash';
 const { transform } = lodash;
 
-import { InitTimeMap, NodeScheduleTimeMap, RecurrenceRule, ScheduleMap, ScheduledTasks } from '@preprocessor/types/ScheduledPreprocess';
+import { InitTimeMap, NodeScheduleTimeMap, RecurrenceRule, ScheduleMap, ScheduledProcessors } from '@preprocessor/types/PreProcessor';
 
 
-export const generateCycleMapForTasks = (scheduleMap: ScheduleMap): { [task in ScheduledTasks]: NodeScheduleTimeMap } => {
+export const generateCycleMapForProcessors = (scheduleMap: ScheduleMap): { [task in ScheduledProcessors]: NodeScheduleTimeMap } => {
   return transform(
       Object.keys(scheduleMap),
       (acc, task) => {
-      acc[task] = generateRecurrenceRuleMapForTask(scheduleMap[task]);
+      acc[task] = generateRecurrenceRuleMapForProcessor(scheduleMap[task]);
     },
-    {} as { [task in ScheduledTasks]: NodeScheduleTimeMap }
+    {} as { [task in ScheduledProcessors]: NodeScheduleTimeMap }
   );
 };
 
@@ -24,14 +24,14 @@ const generateSubRecurrenceRule = (subRule: RecurrenceRule, defaults: { start: n
   );
 };
 
-const generateRecurrenceRuleMapForTask = (initTimeMap: InitTimeMap): NodeScheduleTimeMap => {
+const generateRecurrenceRuleMapForProcessor = (initTimeMap: InitTimeMap): NodeScheduleTimeMap => {
   return {
-    ...(initTimeMap?.month != null ? { month: generateSubRecurrenceRule(initTimeMap.month, defaultInitTimeMap.month) } : null),
-    ...(initTimeMap?.dayOfMonth != null ? { date: generateSubRecurrenceRule(initTimeMap.dayOfMonth, defaultInitTimeMap.dayOfMonth) } : null),
-    ...(initTimeMap?.dayOfWeek != null ? { dayOfWeek: generateSubRecurrenceRule(initTimeMap.dayOfWeek, defaultInitTimeMap.dayOfWeek) } : null),
-    ...(initTimeMap?.hours != null ? { hour: generateSubRecurrenceRule(initTimeMap.hours, defaultInitTimeMap.hours) } : null),
-    ...(initTimeMap?.minutes != null ? { minute: generateSubRecurrenceRule(initTimeMap.minutes, defaultInitTimeMap.minutes) } : null),
-    ...(initTimeMap?.seconds != null ? { second: generateSubRecurrenceRule(initTimeMap.seconds, defaultInitTimeMap.seconds) } : null)
+    ...(initTimeMap?.month ? { month: generateSubRecurrenceRule(initTimeMap.month, defaultInitTimeMap.month) } : null),
+    ...(initTimeMap?.dayOfMonth ? { date: generateSubRecurrenceRule(initTimeMap.dayOfMonth, defaultInitTimeMap.dayOfMonth) } : null),
+    ...(initTimeMap?.dayOfWeek ? { dayOfWeek: generateSubRecurrenceRule(initTimeMap.dayOfWeek, defaultInitTimeMap.dayOfWeek) } : null),
+    ...(initTimeMap?.hours ? { hour: generateSubRecurrenceRule(initTimeMap.hours, defaultInitTimeMap.hours) } : null),
+    ...(initTimeMap?.minutes ? { minute: generateSubRecurrenceRule(initTimeMap.minutes, defaultInitTimeMap.minutes) } : null),
+    ...(initTimeMap?.seconds ? { second: generateSubRecurrenceRule(initTimeMap.seconds, defaultInitTimeMap.seconds) } : null)
   }
 };
 

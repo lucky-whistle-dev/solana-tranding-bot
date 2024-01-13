@@ -19,6 +19,8 @@ export abstract class BaseProcessorProvider {
   private init() {
     this.etcProvider = new ETCDProvider();
     this.auditProvider = new AuditProvider(this.etcProvider);
+
+    this.initInternalProviders();
   }
 
   async run(): Promise<boolean> {
@@ -26,8 +28,6 @@ export abstract class BaseProcessorProvider {
       this.zLog.debug(`initializing and running processor for ${this.name}`)
       
       this.init();
-      this.initInternalProviders();
-
       const payload = await this.process();
       
       this.zLog.debug(`payload for audit action on ${this.name}: ${JSON.stringify(payload, null, 2)}`);

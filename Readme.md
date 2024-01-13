@@ -7,7 +7,7 @@
 
 `SOLT` is an algorithmic trading bot designed to automate the trading process of `Solana` specific ecosystem tokens.
 
-To learn more about the design and algorithm chosen, check [Design](./Design.md).
+To learn more about the design and algorithm chosen, check [Design](./docs/Design.md).
 
 
 ## Setup

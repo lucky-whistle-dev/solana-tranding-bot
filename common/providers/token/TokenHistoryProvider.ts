@@ -1,3 +1,4 @@
+import { asyncExponentialBackoff } from '@core/utils/AsyncExponentialBackoff';
 import { convertISOToUnix } from '@core/utils/Utils';
 import { BirdeyeGetHeaders } from '@common/types/external/Birdeye';
 import { ISODateString } from '@core/types/ISODate';
@@ -17,7 +18,7 @@ export class TokenHistoryProvider {
     };
 
     const options = { method: 'GET', headers };
-    const resp = await fetch(RequestGenerator.priceHistoryRequest(opts), options as any);
+    const resp = await asyncExponentialBackoff(RequestGenerator.priceHistoryRequest(opts), 5, 500, options as any);
     return resp.json();
   }
 }
