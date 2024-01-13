@@ -1,7 +1,7 @@
 import { env } from 'process';
 import { EventEmitter } from 'events';
 import { hostname } from 'os';
-import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher, MultiRangeBuilder, Rangable } from 'etcd3';
+import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher, MultiRangeBuilder, Range } from 'etcd3';
 import lodash from 'lodash';
 const { transform } = lodash;
 
@@ -120,7 +120,11 @@ export class ETCDProvider extends EventEmitter {
       let builder = this.client.getAll();
       
       if ('prefix' in opts) builder = builder.prefix(opts.prefix);
-      if ('range' in opts) builder = builder.inRange(opts.range);
+      if ('range' in opts) { 
+        const range = new Range(opts.range.end, opts.range.start);
+        builder = builder.inRange(range);
+      }
+
       if ('sort' in opts) builder = builder.sort(opts.sort.on, opts.sort.direction)
       if ('limit' in opts) builder = builder.limit(opts.limit);
 

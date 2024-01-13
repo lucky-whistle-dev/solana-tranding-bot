@@ -47,12 +47,11 @@ export class TokenStatsProvider {
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range(opts: Pick<TokenStatsProcessingOpts<'range'>, 'range' | 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
-    const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType']> = await this.etcdProvider.getAll({ 
-      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
+  async range(opts: Omit<TokenStatsProcessingOpts<'range'>, 'sort'>): Promise<TokenStatsSchema['parsedValueType'][]> {
+    const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
+      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
-
-    console.log('range resp:', getAllResp);
+    
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 }

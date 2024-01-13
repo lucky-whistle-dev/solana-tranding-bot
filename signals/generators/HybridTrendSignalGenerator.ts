@@ -23,12 +23,14 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
 
   protected async getApplicableStats(): Promise<StatsEntry<ShortInterval, LongInterval>> {
     const now = new Date();
-    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
-    const end: TokenStatsSchema['formattedKeyType']  = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+
+    const dayAgo = subDays(now, 1);
+    const twoDaysAgo = subDays(now, 2);
+
+    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${dayAgo.toISOString() as ISODateString}`;
+    const end: TokenStatsSchema['formattedKeyType']  = `tokenStats/${twoDaysAgo.toISOString() as ISODateString}`;
 
     const latestFromYDay = await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 });
-
-    console.log('latest from yday:', latestFromYDay);
     return first(latestFromYDay);
   }
 
@@ -69,5 +71,5 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
     }
 
     return 'NOOP';
-  } 
+  }
 }

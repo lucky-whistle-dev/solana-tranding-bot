@@ -1,6 +1,6 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
-import { ProcessorSchedulerProvider } from './providers/ProcessorSchedulerProvider';
+import { ProcessorSchedulerProvider } from '@preprocessor/providers/ProcessorSchedulerProvider';
 
 
 export class PreProcessorServer extends BaseServer {
