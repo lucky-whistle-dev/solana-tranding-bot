@@ -1,8 +1,8 @@
 import { convertISOToUnix } from '@core/utils/Utils';
-import { BirdeyeGetHeaders } from '@common/types/Birdeye';
+import { BirdeyeGetHeaders } from '@common/types/external/Birdeye';
 import { ISODateString } from '@core/types/ISODate';
-import { SupportedChain } from '@common/types/Token';
-import { TokenPriceHistoryRequest, TokenPriceHistoryResponse } from '@common/types/TokenHistory';
+import { SupportedChain } from '@common/types/token/Token';
+import { TokenPriceHistoryRequest, TokenPriceHistoryResponse } from '@common/types/token/TokenHistory';
 import { BIRDEYE_API_ENDPOINT } from '@config/BirdEye';
 
 

@@ -2,8 +2,8 @@ import { subDays } from 'date-fns';
 
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 
-import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
-import { PriceEvent, TokenOHLCResponse } from '@common/types/TokenPrice';
+import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
+import { PriceEvent, TokenOHLCResponse } from '@common/types/token/TokenPrice';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 

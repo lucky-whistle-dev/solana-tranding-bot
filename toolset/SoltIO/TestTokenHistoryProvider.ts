@@ -2,7 +2,7 @@ import { subDays } from 'date-fns';
 
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 
-import { TokenHistoryProvider } from '@common/providers/TokenHistoryProvider';
+import { TokenHistoryProvider } from '@common/providers/token/TokenHistoryProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 

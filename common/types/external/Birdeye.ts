@@ -1,4 +1,4 @@
-import { SupportedChain, Timeframe, TokenAddress } from '@common/types/Token';
+import { SupportedChain, Timeframe, TokenAddress } from '@common/types/token/Token';
 
 
 type __baseRequest = { address: TokenAddress, type: Timeframe };

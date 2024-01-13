@@ -1,4 +1,4 @@
-import { TokenAddress } from '@common/types/Token';
+import { TokenAddress } from '@common/types/token/Token';
 import { EtcdSchema } from '@core/models/EtcdModel';
 import { ISODateString } from '@core/types/ISODate';
 

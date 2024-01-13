@@ -1,5 +1,5 @@
-import { TokenAddressType, SupportedChain } from '@common/types/Token';
-import { BirdeyeResponse, BirdeyeTokenRequest } from './Birdeye';
+import { TokenAddressType, SupportedChain } from '@common/types/token/Token';
+import { BirdeyeResponse, BirdeyeTokenRequest } from '../external/Birdeye';
 
 
 export interface TokenPriceHistoryHeaders {

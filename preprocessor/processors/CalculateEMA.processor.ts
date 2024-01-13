@@ -6,7 +6,7 @@ import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProv
 
 import { calculateEMA } from '@core/utils/Math';
 import { TokenStatsSchema, StatsEntry } from '@common/models/TokenStats';
-import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
+import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 import { AuditSchema, Action } from '@common/models/Audit';

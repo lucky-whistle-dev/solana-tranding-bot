@@ -1,8 +1,8 @@
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { TokenPriceProvider } from '@common/providers/TokenPriceProvider';
-import { TokenSwapProvider } from '@common/providers/TokenSwapProvider';
-import { TokenPriceObject, TokenPriceRequestPayload } from '@common/types/TokenPrice';
+import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
+import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
+import { TokenPriceObject, TokenPriceRequestPayload } from '@common/types/token/TokenPrice';
 
 
 export class AutoTradeProvider {

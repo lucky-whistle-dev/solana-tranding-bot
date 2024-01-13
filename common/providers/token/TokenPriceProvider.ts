@@ -1,11 +1,11 @@
 import { LogProvider } from '@core/providers/LogProvider';
 import { WebSocketProvider } from '@core/providers/WebSocketProvider';
-import { SupportedChain } from '@common/types/Token';
-import { BirdeyeGetHeaders } from '@common/types/Birdeye';
+import { SupportedChain } from '@common/types/token/Token';
+import { BirdeyeGetHeaders } from '@common/types/external/Birdeye';
 import { 
   PriceEvent, TokenPriceObject, TokenPriceRequestPayload, TokenPriceResponsePayload,
   TokenOHLCRequest, TokenOHLCResponse
-} from '@common/types/TokenPrice';
+} from '@common/types/token/TokenPrice';
 import { BIRDEYE_SOCKET_ENDPOINT, PROTOCOL, ORIGIN, BIRDEYE_API_ENDPOINT } from '@config/BirdEye';
 import { convertISOToUnix } from '@core/utils/Utils';
 import { ISODateString } from '@core/types/ISODate';

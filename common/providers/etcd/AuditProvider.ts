@@ -51,6 +51,14 @@ export class AuditProvider {
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
+  async range<T extends Action, V>(opts: AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
+    const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']> = await this.etcdProvider.getAll({ 
+      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 9 ? opts.limit : 1
+    });
+
+    return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
+  }
+
   private async generateValidatedPayload<T extends Action, V>(
     partialPayload: Pick<(AuditSchema<T, V>)['parsedValueType'], 'action' | 'auditEntrySource' | 'timestamp'>
   ): Promise<(Required<(AuditSchema<T, V>)['parsedValueType']>)> {
@@ -72,4 +80,5 @@ export class AuditProvider {
 }
 
 
-type AuditProcessingOpts<T extends Action, V = string> = ETCDDataProcessingOpts<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix']>;
+type AuditProcessingOpts<T extends Action, V = string, TYP extends 'iterate' | 'range' = 'iterate'> = 
+  ETCDDataProcessingOpts<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix'], TYP>;
