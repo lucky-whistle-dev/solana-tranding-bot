@@ -61,7 +61,7 @@ export class CalculateEMAProcessor extends BaseProcessorProvider {
       return { action: 'calculateEMA', payload: initialEntry };
     }
 
-    const { shortTermEMA, longTermEMA  } = prevStatsEntry 
+    const { shortTermEMA, longTermEMA } = prevStatsEntry 
       ? prevStatsEntry
       : { shortTermEMA: { interval: defaultSInterval, value: 0 }, longTermEMA: { interval: defaultLInterval, value: 0 }}
     
