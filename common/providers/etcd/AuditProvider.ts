@@ -45,15 +45,15 @@ export class AuditProvider {
 
   async iterateFromLatest<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, V>, 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
     const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'auditTrail', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 9 ? opts.limit : 1
+      prefix: 'auditTrail', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range<T extends Action, V>(opts: AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
+  async range<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>, 'range' | 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
     const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']> = await this.etcdProvider.getAll({ 
-      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 9 ? opts.limit : 1
+      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);

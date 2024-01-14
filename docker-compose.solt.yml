@@ -8,22 +8,30 @@ x-variables:
   initial_cluster_token: &initial_cluster_token '--initial-cluster-token=secrettoken'
   listen_peer_urls: &listen_peer_urls '--listen-peer-urls=http://0.0.0.0:2380'
   listen_client_urls: &listen_client_urls '--listen-client-urls=http://0.0.0.0:2379'
+  peer-trusted-ca-file: &peer-trusted-ca-file '--peer-trusted-ca-file=${HOME}/solt/certs/ca.crt'
+  auto-tls: &auto-tls '--auto-tls'
+  peer-auto-tls: &peer-auto-tls '--peer-auto-tls'
   common_etcd_settings: &common_etcd_settings
     image: quay.io/coreos/etcd:v3.5.9
     entrypoint: /usr/local/bin/etcd
+    environment:
+      - ETCD_DATA_DIR=/etcd-data
     ports: 
       - '4001'
       - '2380'
       - '2379'
     networks:
-      api_layer:
+      data_layer:
   common_api_settings: &common_api_settings
     environment:
+      - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
+      - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
       - ETCDHOSTS=etcd0:2379,etcd1:2379,etcd2:2379
       - NODE_ENV=docker
       - NODE_OPTIONS="--max-old-space-size=4096"
     networks:
       api_layer:
+      data_layer:
     restart: always
     depends_on:
       - etcd0
@@ -70,14 +78,14 @@ x-variables:
       retries: 3
 
 services:
-  soltapiproxy: 
-    image: soltapiproxy-img
+  soltproxy: 
+    image: soltproxy-img
     hostname: ${HOSTNAME}
     build:
       context: .
       dockerfile: ./lb/Dockerfile.solt.lb
     volumes:
-      - ./certs:/certs
+      - $HOME/solt/certs/haproxy:/certs
     ports: 
       - '443:443'
     networks:
@@ -128,8 +136,11 @@ services:
       - *initial_cluster_token
       - *listen_client_urls
       - *listen_peer_urls
+      #- *auto-tls
+      #- *peer-auto-tls
     volumes:
-      - etcd0:/etcd_data
+    # - $HOME/solt/certs/etcd/etcd0/server.crt:/etc/ssl/certs/ca-certificates.crt
+      - $HOME/solt/etcd0:/etcd-data
   etcd1:
     <<: *common_etcd_settings
     hostname: etcd1
@@ -145,8 +156,11 @@ services:
       - *initial_cluster_token
       - *listen_client_urls
       - *listen_peer_urls
+      #- *auto-tls
+      #- *peer-auto-tls
     volumes:
-      - etcd1:/etcd_data
+    # - $HOME/solt/certs/etcd/etcd1/etcd1.crt:/etc/ssl/certs/ca-certificates.crt
+      - $HOME/solt/etcd1:/etcd-data
   etcd2:
     <<: *common_etcd_settings
     hostname: etcd2
@@ -162,14 +176,14 @@ services:
       - *initial_cluster_token
       - *listen_client_urls
       - *listen_peer_urls
+      #- *auto-tls
+      #- *peer-auto-tls
     volumes:
-      - etcd2:/etcd_data
+    # - $HOME/solt/certs/etcd/etcd2/etcd2.crt:/etc/ssl/certs/ca-certificates.crt
+      - $HOME/solt/etcd2:/etcd-data
 
 networks:
   api_layer:
     driver: bridge
-
-volumes:
-  etcd0:
-  etcd1:
-  etcd2:
+  data_layer:
+    driver: bridge

@@ -2,8 +2,8 @@ import { subDays } from 'date-fns';
 
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 
+import { envLoader } from '@common/EnvLoader';
 import { TokenHistoryProvider } from '@common/providers/token/TokenHistoryProvider';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
@@ -11,7 +11,7 @@ export class TestTokenHistoryProvider extends BaseSoltIO {
   constructor() { super(); }
 
   async runTest(): Promise<boolean> {
-    const tpHistoryProvider = new TokenHistoryProvider(BIRDEYE_API_KEY, 'solana');
+    const tpHistoryProvider = new TokenHistoryProvider(envLoader.BIRDEYE_API_KEY, 'solana');
 
     const now = new Date();
     const sevenDaysAgo = subDays(now, 7);

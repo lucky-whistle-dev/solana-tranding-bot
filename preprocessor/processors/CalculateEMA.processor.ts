@@ -1,18 +1,25 @@
-import { addDays, subDays } from 'date-fns';
+import { addDays, subDays, subMinutes } from 'date-fns';
 import lodash from 'lodash';
 const { first } = lodash;
 
 import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
 
-import { calculateEMA, calculateSMA } from '@core/utils/Math';
-import { TokenStatsSchema, StatsEntry } from '@common/models/TokenStats';
-import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
-import { AuditSchema, Action } from '@common/models/Audit';
-import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
 import { ISODateString } from '@core/types/ISODate';
+import { calculateEMA, calculateSMA } from '@core/utils/Math';
+import { envLoader } from '@common/EnvLoader';
+import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
+import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
+import { TokenStatsSchema, StatsEntry } from '@common/models/TokenStats';
+import { AuditSchema, Action } from '@common/models/Audit';
+import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
+
+const DEFAULT_S_INTERVAL: TokenStatsSchema['parsedValueType']['shortTermEMA']['interval'] = 7;
+const DEFAULT_L_INTERVAL: TokenStatsSchema['parsedValueType']['longTermEMA']['interval'] = 50;
+
+const FRAME_SIZE_IN_MIN = 5;
+const MINUTES_IN_DAY = 24 * 60;
+const FRAMES_IN_DAY_IN_MIN = MINUTES_IN_DAY / FRAME_SIZE_IN_MIN;
 
 export class CalculateEMAProcessor extends BaseProcessorProvider {
   private tokenPriceProvider: TokenPriceProvider;
@@ -21,51 +28,23 @@ export class CalculateEMAProcessor extends BaseProcessorProvider {
   constructor() { super(CalculateEMAProcessor.name); }
 
   initInternalProviders(): boolean {
-    this.tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
+    this.tokenPriceProvider = new TokenPriceProvider(envLoader.BIRDEYE_API_KEY, 'solana');
     this.tokenStatsProvider = new TokenStatsProvider(this.etcProvider);
 
     return true;
   }
 
   async process(): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])> {
-    const defaultSInterval: TokenStatsSchema['parsedValueType']['shortTermEMA']['interval'] = 7;
-    const defaultLInterval: TokenStatsSchema['parsedValueType']['longTermEMA']['interval'] = 50;
+    const now = new Date();
 
-    const prevStatsEntry: TokenStatsSchema['parsedValueType'] = await this.tokenStatsProvider.getLatest();
+    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
+    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
 
-    if (! prevStatsEntry) {
-      const now = new Date();
-      const dayAgo = subDays(now, 1);
+    const prevStatsEntry: TokenStatsSchema['parsedValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
 
-      const sTimeTo = subDays(now, 1 + defaultSInterval);
-      const lTimeTo = subDays(now, 1 + defaultLInterval);
-
-      const sPriceData = await this.tokenPriceProvider.getOHLC({ address: SOL_TOKEN_ADDRESS, type: '5m', time_from: sTimeTo, time_to: dayAgo });
-      const lPriceData = await this.tokenPriceProvider.getOHLC({ address: SOL_TOKEN_ADDRESS, type: '5m', time_from: lTimeTo, time_to: dayAgo });
-
-      const closingShortTermPrices = sPriceData.data.items.map(item => item.c);
-      const closingLongTermPrices = lPriceData.data.items.map(item => item.c);
-      
-      this.zLog.debug(`closing short term prices: ${closingShortTermPrices}`);
-      this.zLog.debug(`closing long term prices: ${closingLongTermPrices}`);
-
-      const initialEntry: TokenStatsSchema['parsedValueType'] = {
-        shortTermEMA: { value: calculateSMA(closingShortTermPrices), interval: defaultSInterval },
-        longTermEMA: { value: calculateSMA(closingLongTermPrices), interval: defaultLInterval },
-        timestamp: dayAgo.toISOString() as ISODateString
-      };
-
-      this.zLog.debug(`initial stats entry: ${JSON.stringify(initialEntry, null, 2)}`);
-
-      await this.tokenStatsProvider.insertTokenStatsEntry(initialEntry);
-      return { action: 'calculateEMA', payload: initialEntry };
-    }
-
-    const { shortTermEMA, longTermEMA } = prevStatsEntry 
-      ? prevStatsEntry
-      : { shortTermEMA: { interval: defaultSInterval, value: 0 }, longTermEMA: { interval: defaultLInterval, value: 0 }}
+    const { shortTermEMA, longTermEMA, timestamp } = prevStatsEntry;
     
-    const prevTimeframe = prevStatsEntry ? new Date(prevStatsEntry.timestamp) : subDays(new Date(), 1);
+    const prevTimeframe = prevStatsEntry ? new Date(timestamp) : subDays(new Date(), 1);
     const currentFrame = addDays(prevTimeframe, 1);
 
     const ohlcResp = await this.tokenPriceProvider.getOHLC({ address: SOL_TOKEN_ADDRESS, type: '5m', time_from: prevTimeframe, time_to: currentFrame });
@@ -76,9 +55,40 @@ export class CalculateEMAProcessor extends BaseProcessorProvider {
       longTermEMA: { interval: longTermEMA.interval, value: calculateEMA(closing, longTermEMA.value, longTermEMA.interval) },
     });
 
-    this.zLog.debug(`finished processing new stats entry for ema for key: ${key}`);
-    this.zLog.debug(`current stats entry: ${JSON.stringify(value, null, 2)}, previous stats entry: ${JSON.stringify(prevStatsEntry, null, 2)}`);
+    // this.zLog.debug(`finished processing new stats entry for ema for key: ${key}`);
+    // this.zLog.debug(`current stats entry: ${JSON.stringify(value, null, 2)}, previous stats entry: ${JSON.stringify(prevStatsEntry, null, 2)}`);
     
     return { action: 'calculateEMA', payload: value };
+  }
+
+  async seed(now: Date): Promise<(AuditSchema<Action, StatsEntry>)['parsedValueType']['action']> {
+    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
+    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+
+    const prevStatsEntry: TokenStatsSchema['parsedValueType'][] = await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 });
+    if (prevStatsEntry.length) return null;
+
+    let seededEntry: TokenStatsSchema['parsedValueType']
+    for (const [ frame, _ ] of Object.entries(Array(FRAMES_IN_DAY_IN_MIN).fill(0))) {
+      const currFrameSize = MINUTES_IN_DAY - (FRAME_SIZE_IN_MIN * +frame);
+
+      const frameAgo = subMinutes(now, currFrameSize);
+      const sTimeTo = subDays(frameAgo, DEFAULT_S_INTERVAL);
+      const lTimeTo = subDays(frameAgo, DEFAULT_L_INTERVAL);
+
+      const sPriceData = await this.tokenPriceProvider.getOHLC({ address: SOL_TOKEN_ADDRESS, type: '5m', time_from: sTimeTo, time_to: frameAgo });
+      const lPriceData = await this.tokenPriceProvider.getOHLC({ address: SOL_TOKEN_ADDRESS, type: '5m', time_from: lTimeTo, time_to: frameAgo });
+
+      seededEntry = {
+        shortTermEMA: { value: calculateSMA(sPriceData.data.items.map(item => item.c)), interval: DEFAULT_S_INTERVAL },
+        longTermEMA: { value: calculateSMA(lPriceData.data.items.map(item => item.c)), interval: DEFAULT_L_INTERVAL },
+        timestamp: frameAgo.toISOString() as ISODateString
+      };
+  
+      this.zLog.debug(`seeded stats entry for frame ${frame}: ${JSON.stringify(seededEntry, null, 2)}`);
+      await this.tokenStatsProvider.insertTokenStatsEntry(seededEntry);
+    }
+
+    return { action: 'calculateEMA', payload: seededEntry };
   }
 }

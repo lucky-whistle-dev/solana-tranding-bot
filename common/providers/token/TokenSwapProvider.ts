@@ -4,6 +4,7 @@ import { Connection, Keypair, VersionedTransaction } from '@solana/web3.js';
 import { Wallet } from '@project-serum/anchor';
 
 import { LogProvider } from '@core/providers/LogProvider';
+import { envLoader } from '@common/EnvLoader';
 import { SwapRequest } from '@common/types/token/TokenTrade';
 import { JUP_REQUEST_HEADERS, JUP_REQUEST_METHOD, BUFF_ENCODING, JUP_BASE_API } from '@config/Jupiter';
 import { RPC_ENDPOINT } from '@config/RPC';
@@ -15,7 +16,7 @@ export class TokenSwapProvider {
 
   constructor(private rpcEndpoint: string = RPC_ENDPOINT, private zLog: LogProvider = new LogProvider(TokenSwapProvider.name)) {
     this.conn = new Connection(this.rpcEndpoint);
-    // this.wallet = new Wallet(Keypair.fromSecretKey(bs58.decode(process.env.PRIVATE_KEY || '')));
+    //  this.wallet = new Wallet(Keypair.fromSecretKey(bs58.decode(envLoader.WALLET_PRIVATE_KEY || '')));
   }
 
   async swap(opts: { inputMint: string, outputMint: string, amount: number, slippageBps: number }): Promise<boolean> {

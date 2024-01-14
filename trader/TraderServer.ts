@@ -1,4 +1,6 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
+
+import { envLoader } from '@common/EnvLoader';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
@@ -6,7 +8,6 @@ import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
 import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
 import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { RPC_ENDPOINT } from '@config/RPC';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
@@ -27,7 +28,7 @@ export class TraderServer extends BaseServer {
     const auditProvider = new AuditProvider(etcdProvider);
     const tokenStatsProvider = new TokenStatsProvider(etcdProvider);
 
-    const tokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
+    const tokenPriceProvider = new TokenPriceProvider(envLoader.BIRDEYE_API_KEY, 'solana');
     const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
 
     const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider).hybridtrend;

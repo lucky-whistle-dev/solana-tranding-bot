@@ -2,9 +2,9 @@ import { subDays } from 'date-fns';
 
 import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 
+import { envLoader } from '@common/EnvLoader';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { PriceEvent, TokenOHLCResponse } from '@common/types/token/TokenPrice';
-import { BIRDEYE_API_KEY } from '@config/BirdEye';
 import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
@@ -12,7 +12,7 @@ export class TestTokenPriceProvider extends BaseSoltIO {
   private testTokenPriceProvider: TokenPriceProvider;
   constructor() { 
     super(); 
-    this.testTokenPriceProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
+    this.testTokenPriceProvider = new TokenPriceProvider(envLoader.BIRDEYE_API_KEY, 'solana');
   }
 
   async runTest(): Promise<boolean> {
@@ -37,7 +37,7 @@ export class TestTokenPriceProvider extends BaseSoltIO {
 
   private async testSocket() { 
     const event: PriceEvent = 'price_data';
-    const tpProvider = new TokenPriceProvider(BIRDEYE_API_KEY, 'solana');
+    const tpProvider = new TokenPriceProvider(envLoader.BIRDEYE_API_KEY, 'solana');
     
     tpProvider.startPriceListener(event, {
       type: 'SUBSCRIBE_PRICE',

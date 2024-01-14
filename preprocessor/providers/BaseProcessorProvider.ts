@@ -15,6 +15,7 @@ export abstract class BaseProcessorProvider {
 
   abstract initInternalProviders(): boolean;
   abstract process(): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])>;
+  abstract seed(now: Date): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])>;
 
   private init() {
     this.etcProvider = new ETCDProvider();
@@ -23,16 +24,30 @@ export abstract class BaseProcessorProvider {
     this.initInternalProviders();
   }
 
+  async onStartup(): Promise<boolean> {
+    try {
+      const now = new Date();
+      this.zLog.debug(`initializing and running processor for ${this.name}`)
+      
+      this.init();
+      const payload = await this.seed(now);
+      await this.auditProvider.insertAuditEntry({ action: payload });
+      
+      return true;
+    } catch (err) {
+      this.zLog.error(`error on processor file: ${err}`);
+      throw err;
+    }
+  }
+
   async run(): Promise<boolean> {
     try {
       this.zLog.debug(`initializing and running processor for ${this.name}`)
       
       this.init();
       const payload = await this.process();
-      
-      this.zLog.debug(`payload for audit action on ${this.name}: ${JSON.stringify(payload, null, 2)}`);
       await this.auditProvider.insertAuditEntry({ action: payload });
-      
+
       return true;
     } catch (err) {
       this.zLog.error(`error on processor file: ${err}`);

@@ -3,7 +3,9 @@ FROM node:18 as buildapi
 RUN apt-get update
 RUN apt-get install -y curl
 
-WORKDIR /usr/src/api
+ENV HOME /home
+
+WORKDIR $HOME/api
 
 COPY moduleAlias.mjs \
   ServerConfigurations.ts \ 

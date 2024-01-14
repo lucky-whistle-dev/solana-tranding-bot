@@ -1,6 +1,7 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { ProcessorSchedulerProvider } from '@preprocessor/providers/ProcessorSchedulerProvider';
+import { StartupProvider } from '@preprocessor/providers/StartupProvider';
 
 
 export class PreProcessorServer extends BaseServer {
@@ -16,12 +17,16 @@ export class PreProcessorServer extends BaseServer {
   async startEventListeners(): Promise<void> {
     const etcdProvider = new ETCDProvider();
     const schedulerProvider = new ProcessorSchedulerProvider();
+    const startupProvider = new StartupProvider();
 
     try {
       etcdProvider.startElection(PreProcessorServer.name);
-      etcdProvider.onElection('elected', elected => {
+      etcdProvider.onElection('elected', async elected => {
         try {
-          if (elected) schedulerProvider.start();
+          if (elected) {
+            await startupProvider.start();
+            schedulerProvider.start();
+          }
         } catch (err) {
           this.zLog.error(err);
           process.exit(1);

@@ -1,6 +1,8 @@
 import { env } from 'process';
 import { EventEmitter } from 'events';
-import { hostname } from 'os';
+import { readFileSync } from 'fs';
+import { homedir, hostname } from 'os';
+import { join  } from 'path';
 import { Etcd3, Lease, ILeaseKeepAliveResponse, IOptions, Watcher, MultiRangeBuilder, Range } from 'etcd3';
 import lodash from 'lodash';
 const { transform } = lodash;
@@ -164,11 +166,17 @@ export class ETCDProvider extends EventEmitter {
 }
 
 
+type CertPath = `${string}/solt/certs`
+
 export const DEFAULT_OPTS: IOptions = (() => {
   const hosts: string[] = ((): string[] => {
     const listAsString = env.ETCDHOSTS;
     return listAsString?.split(',') ?? null;
   })();
 
-  return { hosts };
+  return { hosts, 
+    /* credentials: {
+      rootCertificate: readFileSync(join(homedir(), '/solt/certs/etcd'))
+    } */
+  };
 })();
