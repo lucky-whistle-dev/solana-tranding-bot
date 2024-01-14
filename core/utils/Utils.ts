@@ -58,3 +58,5 @@ export const generatePostRequest = (opts: any) => {
 export const convertISOToUnix = (isoString: ISODateString): number => {
   return Math.floor(new Date(isoString).getTime() / 1000);
 }
+
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;

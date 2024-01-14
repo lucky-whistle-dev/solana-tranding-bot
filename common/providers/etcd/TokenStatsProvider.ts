@@ -3,6 +3,7 @@ const { first, transform } = lodash;
 
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
+import { MakeOptional } from '@core/utils/Utils';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenStatsSchema } from '@common/models/TokenStats';
@@ -14,13 +15,15 @@ export class TokenStatsProvider {
   constructor(private etcdProvider: ETCDProvider) {}
 
   async insertTokenStatsEntry(
-    payload: Omit<TokenStatsSchema['parsedValueType'], 'timestamp'>
+    payload: MakeOptional<TokenStatsSchema['parsedValueType'], 'timestamp'>
   ): Promise<{ key: TokenStatsSchema['formattedKeyType'], value: TokenStatsSchema['parsedValueType'] }> {
-    const now = new Date();
-    const formattedNow: ISODateString = now.toISOString() as ISODateString;
+    const formattedDateFrom = (() => {
+      if (payload.timestamp) return payload.timestamp;
+      return new Date().toISOString() as ISODateString;
+    })();
 
-    const key: TokenStatsSchema['formattedKeyType'] = `tokenStats/${formattedNow}`;
-    const formattedPayload: TokenStatsSchema['parsedValueType'] = { timestamp: formattedNow, ...payload }
+    const key: TokenStatsSchema['formattedKeyType'] = `tokenStats/${formattedDateFrom}`;
+    const formattedPayload: TokenStatsSchema['parsedValueType'] = { timestamp: formattedDateFrom, ...payload }
     await this.etcdProvider.put<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType']>(key, formattedPayload);
 
     return { key, value: formattedPayload };
@@ -51,7 +54,7 @@ export class TokenStatsProvider {
     const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
       range: opts.range, sort: { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
-    
+
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 }
