@@ -14,24 +14,34 @@ To learn more about the design and algorithm chosen, check [Design](./docs/Desig
 
 **Ensure that the following are installed on target machine**
 
-`node.js` - install the latest node.js [here](https://nodejs.org/en).
+`docker` - install the latest docker-desktop for mac/windows [here](https://www.docker.com/products/docker-desktop/).
+`nodejs` - install the latest node.js [here](https://nodejs.org/en).
 
-### Installation
+### Certs
 
-In the `root` of the project if `node.js` packages have not been installed:
+run [generateCerts](./generateCerts.sh) to guide through setting up root ca and service certs for solt.
 ```bash
-npm ci
+./generateCerts.sh
 ```
+
+certs are generated under `~/solt/certs` on the host machine.
+
 
 ### Deployment
 
-In the `root` of the project:
+In the `root` of the project, first build `Dockerfile.buildapi`, which creates a nodejs preimage shared between the different services:
 ```bash
-npm run build:all
-npm run start:solt
+./buildpreimages.sh
 ```
 
+Then, to run a development cluster, deploy using docker through [startupDev](./startupDev.sh):
+```bash
+./startupDev.sh
+```
 
-## Deliverables
+This will bind each `etcd` member's data directory to `~/solt/etcd<member-number>`. The bound data will persist through restarts and can be analyzed using `bbolt` command line tool.
 
-For current project deliverables, check [Todo](./Todo.md).
+To stop the services, run:
+```bash
+./stopDev.sh
+```
