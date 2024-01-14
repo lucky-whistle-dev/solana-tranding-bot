@@ -19,13 +19,26 @@ To learn more about the design and algorithm chosen, check [Design](./docs/Desig
 
 ### Certs
 
-run [generateCerts](./generateCerts.sh) to guide through setting up root ca and service certs for solt.
+Run [generateCerts](./generateCerts.sh) to guide through setting up root ca and service certs for solt.
 ```bash
 ./generateCerts.sh
 ```
 
 certs are generated under `~/solt/certs` on the host machine.
 
+
+### ENV
+
+Export the following to your path:
+```bash
+export BIRDEYE_API_KEY=<your-birdeye-api-key>
+export WALLET_PRIVATE_KEY=<your-solana-wallet-private-key>
+source ~/.zshrc
+```
+
+Restart your terminal for the changes to take effect.
+
+**Birdeye subscription needs to be premium to access utilized websocket and https endpoints**
 
 ### Deployment
 
