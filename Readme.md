@@ -37,6 +37,22 @@ export WALLET_PRIVATE_KEY=<your-solana-wallet-private-key>
 source ~/.zshrc
 ```
 
+Optionally, the following fields can also be added:
+```bash
+export SELECTED_TIMEFRAME=<'1m' | '5m' | '10m' | '15m' | '1h' | '1d'>
+export SELECTED_SHORT_TERM_INTERVAL=<1 | 7>
+export SELECTED_LONG_TERM_INTERVAL=<50 | 200>
+export TOKEN_ADDRESS=<selected-token-address>
+```
+
+If the optional fields are not provided, the constants will resolve to default values:
+```ts
+const SELECTED_TIMEFRAME: Timeframe = '5m';
+const SELECTED_SHORT_TERM_INTERVAL: ShortTermInterval = 7;
+const SELECTED_LONG_TERM_INTERVAL: LongTermInterval = 50;
+const TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112'; // address for SOL token
+```
+
 Restart your terminal for the changes to take effect.
 
 **Birdeye subscription needs to be premium to access utilized websocket and https endpoints**
