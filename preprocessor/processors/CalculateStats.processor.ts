@@ -51,8 +51,8 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     const latestClosing = last(ohlcResp.data.items).c;
 
     const updatedShortTermEMA = calculateEMA(latestClosing, shortTerm.ema, shortTerm.interval);
-    const updatedLongTermEMA = calculateEMA(latestClosing, longTerm.ema, longTerm.interval);
     const updatedShortTermStd = calculateStdEMA(latestClosing, shortTerm.ema, shortTerm.std, shortTerm.interval);
+    const updatedLongTermEMA = calculateEMA(latestClosing, longTerm.ema, longTerm.interval);
     const updatedLongTermStd = calculateStdEMA(latestClosing, longTerm.ema, longTerm.std, longTerm.interval);
 
     const { key, value } = await this.tokenStatsProvider.insertTokenStatsEntry({
@@ -74,8 +74,8 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
   }
 
   async seed(now: Date): Promise<(AuditSchema<Action, StatsEntry>)['parsedValueType']['action']> {
-    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
-    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
     const prevStatsEntry: TokenStatsSchema['parsedValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     if (prevStatsEntry) return null;
