@@ -2,12 +2,12 @@ import { hostname } from 'os';
 import lodash from 'lodash';
 const { first, transform } = lodash;
 
+import { envLoader } from '@common/EnvLoader';
 import { Action, AuditEntry, AuditSchema } from '@common/models/Audit';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
 const HOSTNAME = hostname();
@@ -43,17 +43,17 @@ export class AuditProvider {
     return latestEntry;
   }
 
-  async iterateFromLatest<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, V>, 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
+  async iterateFromLatest<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, V>, 'sort' | 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
     const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'auditTrail', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
+      prefix: 'auditTrail', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>, 'range' | 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
+  async range<T extends Action, V>(opts: AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
     const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']> = await this.etcdProvider.getAll({ 
-      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
+      range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
@@ -64,11 +64,7 @@ export class AuditProvider {
   ): Promise<(Required<(AuditSchema<T, V>)['parsedValueType']>)> {
     const latest = await this.getLatest();
     const defaultPayload: Pick<AuditEntry<T, V>, 'holdings' | 'performance'> = {
-      holdings: { 
-        [`${SOL_TOKEN_ADDRESS}`]: { 
-          amount: 0, originallyBoughtAt: '0000-00-00T00:00:00.000Z' as ISODateString, updatedAt: partialPayload.timestamp, averagePriceBought: 0 
-        } 
-      },
+      holdings: { [`${envLoader.TOKEN_ADDRESS}`]: { amount: 0, updatedAt: partialPayload.timestamp, averagePriceBought: 0 } },
       performance: { successRate: 0, totalTrades: 0 }
     };
 

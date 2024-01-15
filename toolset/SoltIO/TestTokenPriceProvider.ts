@@ -5,7 +5,6 @@ import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 import { envLoader } from '@common/EnvLoader';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { PriceEvent, TokenOHLCResponse } from '@common/types/token/TokenPrice';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
 export class TestTokenPriceProvider extends BaseSoltIO {
@@ -28,7 +27,7 @@ export class TestTokenPriceProvider extends BaseSoltIO {
     const dayAgo = subDays(now, 1);
 
     return this.testTokenPriceProvider.getOHLC({
-      address: SOL_TOKEN_ADDRESS,
+      address: envLoader.TOKEN_ADDRESS,
       type: '15m',
       time_from: dayAgo,
       time_to: now
@@ -44,7 +43,7 @@ export class TestTokenPriceProvider extends BaseSoltIO {
       data: {
         queryType: 'simple',
         chartType: '5m',
-        address: SOL_TOKEN_ADDRESS,
+        address: envLoader.TOKEN_ADDRESS,
         currency: 'usd'
       }
     });

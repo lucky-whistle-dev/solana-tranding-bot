@@ -123,7 +123,7 @@ export class ETCDProvider extends EventEmitter {
       
       if ('prefix' in opts) builder = builder.prefix(opts.prefix);
       if ('range' in opts) { 
-        const range = new Range(opts.range.end, opts.range.start);
+        const range = new Range(opts.range.start, opts.range.end);
         builder = builder.inRange(range);
       }
 

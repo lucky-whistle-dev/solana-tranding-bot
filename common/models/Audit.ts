@@ -6,7 +6,7 @@ import { ISODateString } from '@core/types/ISODate';
 export type AuditKeyPrefix = 'auditTrail';
 export type AuditKeySuffix = ISODateString;
 
-export type PreprocessorAction = 'calculateEMA';
+export type PreprocessorAction = 'calculateStats';
 export type TraderAction = 'swap';
 export type AnalyzerAction = 'updateRisk' | 'updateExpectedGain' | 'updateStopLoss';
 
@@ -20,7 +20,6 @@ export interface AuditAction<T extends Action, V = string>{
 export type AuditHoldings = { 
   [token: TokenAddress]: { 
     amount: number,
-    originallyBoughtAt: ISODateString,
     updatedAt: ISODateString,
     averagePriceBought: number;
   }

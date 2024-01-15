@@ -13,14 +13,16 @@ type TimeInterval<T extends ShortInterval | LongInterval> =
   ? ShortInterval 
   : LongInterval;
 
-export type EMAData<T extends ShortInterval | LongInterval> = {
+export type StatsForInterval<T extends ShortInterval | LongInterval> = {
   interval: TimeInterval<T>;
-  value: number;
+  ema: number;
+  std: number;
+  zscore: number;
 };
 
 export interface StatsEntry<SHRT extends ShortInterval = undefined, LONG extends LongInterval = undefined> {
-  shortTermEMA: SHRT extends undefined ? EMAData<7> : EMAData<SHRT>;
-  longTermEMA: LONG extends undefined ? EMAData<50> : EMAData<LONG>;
+  shortTerm: SHRT extends undefined ? StatsForInterval<7> : StatsForInterval<SHRT>;
+  longTerm: LONG extends undefined ? StatsForInterval<50> : StatsForInterval<LONG>;
   timestamp: ISODateString;
 }
 

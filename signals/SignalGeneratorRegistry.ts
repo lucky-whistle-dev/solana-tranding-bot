@@ -5,12 +5,11 @@ import { BaseSignalGeneratorProvider } from '@signals/BaseSignalGeneratorProvide
 import { HybridTrendSignalProvider } from '@signals/generators/HybridTrendSignalGenerator';
 
 
-type SelectedModel = 'hybridtrend';
+type SelectedSignal = 'hybridtrend';
+type SignalGeneratorMap = { [model in SelectedSignal]: BaseSignalGeneratorProvider };
 
 export class SignalGeneratorRegistry {
-  static generators = (
-    auditProvider: AuditProvider, tokenStatsProvider: TokenStatsProvider
-  ): { [model in SelectedModel]: BaseSignalGeneratorProvider } => ({
+  static generators = (auditProvider: AuditProvider, tokenStatsProvider: TokenStatsProvider): SignalGeneratorMap => ({
     hybridtrend: new HybridTrendSignalProvider(auditProvider, tokenStatsProvider)
   });
 }

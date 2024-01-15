@@ -4,7 +4,6 @@ import { BaseSoltIO } from '@toolset/SoltIO/BaseSoltIO';
 
 import { envLoader } from '@common/EnvLoader';
 import { TokenHistoryProvider } from '@common/providers/token/TokenHistoryProvider';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
 export class TestTokenHistoryProvider extends BaseSoltIO {
@@ -17,7 +16,7 @@ export class TestTokenHistoryProvider extends BaseSoltIO {
     const sevenDaysAgo = subDays(now, 7);
 
     const resp = await tpHistoryProvider.getTokenPriceHistory({
-      address: SOL_TOKEN_ADDRESS,
+      address: envLoader.TOKEN_ADDRESS,
       address_type: 'token',
       type: '5m',
       time_from: sevenDaysAgo,

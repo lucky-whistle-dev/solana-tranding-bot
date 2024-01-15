@@ -7,11 +7,7 @@ import { LongInterval, ShortInterval, StatsEntry } from '@common/models/TokenSta
 
 
 export abstract class BaseSignalGeneratorProvider {
-  constructor(
-    protected auditProvider: AuditProvider,
-    protected tokenStatsProvider: TokenStatsProvider,
-    protected zLog: LogProvider
-  ) {}
+  constructor(protected auditProvider: AuditProvider, protected tokenStatsProvider: TokenStatsProvider, protected zLog: LogProvider) {}
 
   async start(price: number): Promise<Signal> {
     const stats = await this.getApplicableStats();

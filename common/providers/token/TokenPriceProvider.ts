@@ -27,13 +27,9 @@ export class TokenPriceProvider extends WebSocketProvider {
   }
 
   async getOHLC(request: TokenOHLCRequest): Promise<TokenOHLCResponse> {
-    const headers: BirdeyeGetHeaders = {
-      accept: 'application/json',
-      'x-chain': this.chain,
-      'X-API-KEY': this.apiKey
-    };
-
+    const headers: BirdeyeGetHeaders = { accept: 'application/json', 'x-chain': this.chain, 'X-API-KEY': this.apiKey };
     const options = { method: 'GET', headers };
+    
     const resp = await asyncExponentialBackoff(RequestGenerator.ohlcRequest(request), 5, 500, options as any);
     return resp.json();
   } 

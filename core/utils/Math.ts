@@ -12,6 +12,27 @@ export const calculateSMA = (values: number[]): number => {
   return sum /values.length;
 }
 
+export const calculateDeviation = (n1: number, n2: number): number => n1 - n2;
+
+export const calculateStdSMA = (values: number[]): number => {
+  const mean = calculateSMA(values);
+  let computedSeries = 0;
+  for (const value of values) {
+    computedSeries += Math.pow(calculateDeviation(value, mean), 2);
+  }
+
+  return Math.sqrt(computedSeries / (values.length - 1));
+}
+
+export const calculateStdEMA = (current: number, ema: number, prevStd: number, iterations: number): number => {
+  const computed = (Math.pow(calculateDeviation(current, ema), 2) + prevStd) / (iterations - 1);
+  return Math.sqrt(computed)
+}
+
+export const calculateZScore = (current: number, mean: number, std: number): number => {
+  return calculateDeviation(current, mean) / std;
+}
+
 export const calculateSlope = (emaEnd: number, emaStart: number, tEnd: number, tStart: number): number => {
   return ((emaEnd - emaStart) / (tEnd - tStart));
 }

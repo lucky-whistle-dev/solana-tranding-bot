@@ -17,6 +17,7 @@ To learn more about the design and algorithm chosen, check [Design](./docs/Desig
 `docker` - install the latest docker-desktop for mac/windows [here](https://www.docker.com/products/docker-desktop/).
 `nodejs` - install the latest node.js [here](https://nodejs.org/en).
 
+
 ### Certs
 
 Run [generateCerts](./generateCerts.sh) to guide through setting up root ca and service certs for solt.
@@ -39,6 +40,9 @@ source ~/.zshrc
 Restart your terminal for the changes to take effect.
 
 **Birdeye subscription needs to be premium to access utilized websocket and https endpoints**
+
+If needed, `@sirgallo` can be contacted and a key can be generated.
+
 
 ### Deployment
 

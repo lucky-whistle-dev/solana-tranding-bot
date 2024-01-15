@@ -1,9 +1,9 @@
-import { CalculateEMAProcessor } from '@preprocessor/processors/CalculateEMA.processor';
+import { CalculateStatsProcessor } from '@preprocessor/processors/CalculateStats.processor';
 import { ScheduleMap } from '@preprocessor/types/PreProcessor';
 
 
 export const scheduleMap: ScheduleMap = {
-  calculateEMA: {
+  calculateStats: {
     timeMap: {
       hours: {
         start: 0,
@@ -17,6 +17,6 @@ export const scheduleMap: ScheduleMap = {
       },
       seconds: 0
     },
-    processor: new CalculateEMAProcessor()
+    processor: new CalculateStatsProcessor()
   }
 };

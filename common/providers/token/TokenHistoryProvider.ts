@@ -11,13 +11,9 @@ export class TokenHistoryProvider {
   constructor(private apiKey: string, private chain: SupportedChain) {}
 
   async getTokenPriceHistory(opts: TokenPriceHistoryRequest): Promise<TokenPriceHistoryResponse> {
-    const headers: BirdeyeGetHeaders = {
-      accept: 'application/json',
-      'x-chain': this.chain,
-      'X-API-KEY': this.apiKey
-    };
-
+    const headers: BirdeyeGetHeaders = { accept: 'application/json', 'x-chain': this.chain, 'X-API-KEY': this.apiKey };
     const options = { method: 'GET', headers };
+    
     const resp = await asyncExponentialBackoff(RequestGenerator.priceHistoryRequest(opts), 5, 500, options as any);
     return resp.json();
   }

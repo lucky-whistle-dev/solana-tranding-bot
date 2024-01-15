@@ -9,7 +9,6 @@ import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
 import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
 import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
 import { RPC_ENDPOINT } from '@config/RPC';
-import { SOL_TOKEN_ADDRESS } from '@config/Token';
 
 
 export class TraderServer extends BaseServer {
@@ -44,7 +43,7 @@ export class TraderServer extends BaseServer {
               data: {
                 queryType: 'simple',
                 chartType: '5m',
-                address: SOL_TOKEN_ADDRESS,
+                address: envLoader.TOKEN_ADDRESS,
                 currency: 'usd'
               }
             });

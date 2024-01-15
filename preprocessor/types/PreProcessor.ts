@@ -3,7 +3,7 @@ import { Range } from 'node-schedule';
 import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
 
 
-export type ScheduledProcessors = 'calculateEMA';
+export type ScheduledProcessors = 'calculateStats';
 
 export type RecurrenceRule<T extends 1 | 2 | 3 = undefined> = 
   T extends undefined

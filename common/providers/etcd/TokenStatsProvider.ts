@@ -42,17 +42,17 @@ export class TokenStatsProvider {
     return latestEntry;
   }
 
-  async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
+  async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'sort' | 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'tokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
+      prefix: 'tokenStats', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range(opts: Omit<TokenStatsProcessingOpts<'range'>, 'sort'>): Promise<TokenStatsSchema['parsedValueType'][]> {
+  async range(opts: TokenStatsProcessingOpts<'range'>): Promise<TokenStatsSchema['parsedValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
-      range: opts.range, sort: { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
+      range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
