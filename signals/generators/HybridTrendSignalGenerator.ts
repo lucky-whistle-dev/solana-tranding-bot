@@ -86,7 +86,7 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
       this.zLog.debug('slowing growth on upward trend');
 
       if (longTermTrend > Math.abs(shortTermTrend)) {
-        this.zLog.debug('possible weak upward momentum with long term increasing faster than short term');
+        this.zLog.debug('possible flattening upward momentum with long term increasing faster than short term');
         
         if (shortTermThreshold === 'OVERBOUGHT' && longTermThreshold !== 'OVERSOLD') {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
@@ -141,6 +141,8 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
           return 'SELL';
         }
       } else {
+        this.zLog.debug('possible accelerating downtrend with short term increasing faster than long term');
+
         if (longTermThreshold === 'OVERBOUGHT') {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'SELL';
