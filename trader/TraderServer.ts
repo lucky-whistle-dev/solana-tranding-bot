@@ -1,7 +1,7 @@
 import { BaseServer } from '@baseServer/core/BaseServer';
 
-import { envLoader } from '@common/EnvLoader';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
+import { envLoader } from '@common/EnvLoader';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
@@ -30,7 +30,7 @@ export class TraderServer extends BaseServer {
     const tokenPriceProvider = new TokenPriceProvider(envLoader.BIRDEYE_API_KEY, 'solana');
     const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
 
-    const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider).hybridtrend;
+    const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider)[envLoader.SELECTED_SIGNAL_GENERATOR];
     const autoTrader: AutoTraderProvider = new AutoTraderProvider(signalGenerator, tokenPriceProvider, tokenSwapProvider);
 
     try {

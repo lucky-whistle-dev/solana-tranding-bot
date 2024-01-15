@@ -1,4 +1,3 @@
-import { StatsEntry, ShortInterval, LongInterval } from '@common/models/TokenStats';
-
-
 export type Signal =  'BUY' | 'SELL' | 'NOOP';
+
+export type SignalGenerator = 'hybridtrend';
