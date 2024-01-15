@@ -21,7 +21,6 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
 
   protected async getApplicableStats(): Promise<StatsEntry<ShortInterval, LongInterval>> {
     const now = new Date();
-
     const start: TokenStatsSchema['formattedKeyType']  = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
     const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
