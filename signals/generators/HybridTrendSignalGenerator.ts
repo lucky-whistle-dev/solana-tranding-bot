@@ -139,6 +139,11 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'SELL';
         }
+
+        if (shortTermThreshold === 'OVERSOLD') {
+          this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
+          return 'BUY';
+        }
       } else {
         this.zLog.debug('possible accelerating downtrend with short term increasing faster than long term');
 

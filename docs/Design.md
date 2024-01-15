@@ -194,6 +194,11 @@ func generate_signal(price, shortTermEMA, longTermEMA, shortTermTrend, longTermT
       if shortTermThreshold == overbought && longTermThreshold != oversold:
         // deviation from mean shows possibly overbought
         return SELL
+
+      if shortTermThreshold == oversold {
+        // deviation from mean shows possibly oversold
+        return 'BUY';
+      }
     
     else:
       // possible strong downward momentum with short term increasing faster than long term
