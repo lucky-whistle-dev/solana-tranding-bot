@@ -6,7 +6,7 @@
 
 ### Overview
 
-`SOLT` utilizes a hybrid [mean reversion](https://en.wikipedia.org/wiki/Mean_reversion_(finance)).
+`SOLT` utilizes a hybrid [mean reversion](https://en.wikipedia.org/wiki/Mean_reversion_(finance)), focusing on determing overall momentum of the time series data to then determine how to handle deviations from the mean.
 
 
 ### Prereq
@@ -32,6 +32,26 @@ $$
 $$
 \begin{align}
   &EMA(p_{t}, EMA_{t - 1}, n) = \alpha\times{p_{t}} + (1 - \alpha)\times{EMA_{t - 1}}
+\end{align}
+$$
+
+#### Deviation
+
+$$
+\begin{align}
+  &DEV(p_{t}, EMA_{t}) = p_{t} - EMA_{t}
+\end{align}
+$$
+
+#### Standard Deviation
+
+The standard deviation calculation used is not standard, but is an adaption where the current data's deviation is weighted more than historical points in the time series, which will be refered to as `exponential standard deviation`.
+
+To calculate:
+
+$$
+\begin{align}
+  &ESTD(p_{t}, EMA_{t}, ESTD_{t - 1}, n) = \sqrt{\alpha\times{DEV(p_{t}, EMA_{t})^{2}} + (1 - \alpha)\times{ESTD_{t - 1}^{2}}}
 \end{align}
 $$
 
@@ -61,84 +81,154 @@ $$
 \end{align}
 $$
 
+#### z-score
+
+$$
+\begin{align}
+  &\text{z-score}(p_{t}, EMA_{t}, ESTD_{t}) = \frac{DEV(p_{t}, EMA_{t})}{ESTD_{t}}
+\end{align}
+$$
+
+#### z-score Thresholds
+
+$$
+\begin{align}
+  &\text{threshold} =
+  \begin{cases}
+    \text{z-score} > 1.5 & \text{overbought} \\
+    1.5 > \text{z-score} >= 0 & \text{positive insignificant} \\
+    0 > \text{z-score} >= -1.5 & \text{negative insignificant} \\
+    \text{z-score} > -1.5 & \text{oversold}
+  \end{cases}
+\end{align}
+$$
+
 
 ### Algorithm
 
 **NOTE**
+
 ```
-for short term trend --> 7 day EMA
-for long term trend --> 50 day EMA
+short term trend --> 1 | 7 day EMA
+long term trend --> 50 | 200 day EMA
+timeframe interval --> 1 minute | 5 minute | 10 minute | 15 minute | 1 hour | 1 day
 ```
 
-`The following pseudocode outlines trading a selected asset.`
+`The following pseudocode outlines generating trade signals for a selected asset.`
 
-To handle execution of orders:
+To generate signals `(BUY, NOOP, SELL)`:
 ```
-func execute_order(asset, price, ema7, ema50, trend7, trend50, targetGain, maxLoss):
-  if trend50 > 0 && trend7 > 0:
-    // indicates strong upward momentum
+func generate_signal(price, shortTermEMA, longTermEMA, shortTermTrend, longTermTrend, shortTermZScore, longTermZScore):
+  shortTermThreshold = determineDeviationThreshold(shortTermZScore)
+  longTermThreshold = determineDeviationThreshold(shortTermZScore)
 
-    if asset is owned:
-      if trend7 < trend50 && price deviates above mean:
-        // the 50 day trend rate of change is increasing faster than the 7 day trend rate of change
-        if price > asset buy price && (price - asset buy price) / 100 = targetGain:
-          // target gain has been achieved 
-          sell all
-        else:
-          reduce holding
-  
-  if trend50 > 0 && trend7 < 0:
-    // indicates weak upward momentum
+  if longTermTrend > 0 && shortTermTrend > 0:
+    // trend indicating increasing growth 
 
-    if asset is owned:
-      if ABS_VALUE | trend7 | < trend50 && price deviates below mean:
-        // the 7 day trend rate of change is increasing faster than the 50 day trend rate of change
-        buy
-      else:
-        if price > asset buy price && (price - asset buy price) / 100 = targetGain:
-          // target gain has been achieved
-          sell all
-        else:
-          reduce holding
+    if longTermTrend > shortTermTrend:
+      // possible strong upward momentum with long term increasing faster than short term
+
+      if shortTermThreshold >= positive insignificant && longTermThreshold >= positive insignificant:
+        // deviation from mean shows possibly overbought
+        return SELL
+
+      if shortTermThreshold <= negative insignifcant && longTermThreshold == oversold:
+        // deviation from mean shows possibly oversold
+        return BUY
+    
     else:
-      if ABS_VALUE | trend7 | < trend50 && price deviates below mean:
-        // the 7 day trend rate of change is increasing faster than the 50 day trend rate of change
-        buy
-  
-  if trend50 < 0 && trend7 > 0:
-    // indicates weak downward momentum
+      // possible slowing upward momentum with short term increasing faster than long term
 
-    if asset is owned:
-      if ABS_VALUE | trend50 | > trend7 && price deviates over mean:
-        // the 50 day trend rate of change is increasing faster than the 7 day trend rate of change
-        
-        if price < asset buy price && (asset buy price - price) / 100 = maxLoss:
-          // stop loss has been reached
-          sell all
-        else:
-          reduce holding
-      else if ABS_VALUE | trend50 | < trend7 && price deviates under mean:
-        buy
-  
-  if trend50 < 0 && trend7 < 0:
-    // indicates strong downward momentum
+      if shortTermThreshold == oversold:
+        // deviation from mean shows possibly overbought
+        return SELL
 
-    if asset is owned:
-      if price < asset buy price && (asset buy price - price) / 100 = maxLoss:
-        // stop loss has been reached
-        sell all
-      else:
-        reduce holding
+      if shortTermThreshold == oversold && longTermThreshold <= negative insignificant:
+        // deviation from mean shows possibly oversold
+        return BUY
+  
+  if longTermTrend > 0 && shortTermTrend < 0:
+    // trend indicating slowing growth 
+
+    if longTermTrend > ABS_VALUE | shortTermTrend |:
+      // possible weak upward momentum with long term increasing faster than short term
+
+      if shortTermThreshold == overbought && longTermThreshold <= positive insignificant:
+        // deviation from mean shows possibly overbought
+        return SELL
+      
+      if shortTermThreshold <= negative insignificant && longTermThreshold <= negative insignificant:
+        // deviation from mean shows possibly oversold
+        return BUY
+
+    else:
+      // possible weak downward short term momentum with short term increasing faster than long term
+      
+      if shortTermThreshold == positive insignificant:
+        // deviation from mean shows possibly overbought
+        return SELL
+
+  if longTermTrend < 0 && shortTermTrend >= 0:
+    // indicates slowing decay
+
+    if ABS_VALUE | longTermTrend | > shortTermTrend:
+      // possible increasing downward momentum with long term increasing faster than short term
+     
+      if longTermThreshold >= positive insignificant:
+        // deviation from mean shows possibly overbought
+        return SELL
+    
+    else:
+      // possible weak upward momentum with short term increasing faster than long term
+
+      if shortTermThreshold == oversold && longTermThreshold >= negative insignificant:
+        // deviation from mean shows possibly oversold
+        return BUY
+
+  if longTermTrend < 0 && shortTermTrend < 0:
+    // indicates increasing decay
+
+    if ABS_VALUE | longTermTrend | > shortTermTrend:
+      // possible slowing downward with long term increasing faster than short term
+
+      if shortTermThreshold == overbought && longTermThreshold != oversold:
+        // deviation from mean shows possibly overbought
+        return SELL
+    
+    else:
+      // possible strong downward momentum with short term increasing faster than long term
+
+      if longTermThreshold == overbought:
+        // deviation from mean shows possibly overbought
+        return SELL
+
+  return 'NOOP' if none of the above filters are satisfied
 ```
+
+
+### Handling Live Data
 
 Selected asset will be continuously listened on for updated data:
 ```
 func price_listener(asset):
   for price of incoming prices until asset is removed:
-    { ema7, ema50 } = calculate ema for 7 and 50 day
-    { trend7, trend50 } = calculate trend for 7 and 50 day
+    { shortTermEMA, longTermEMA } = calculate ema for short and long terms
+    
+    { shortTermTrend, longTermTrend } = calculate trend for short and long terms
+    
+    { shortTermSTD, longTermSTD } = calculate trend for short and long terms
+    
+    { shortTermZScore, longTermZScore } = calculate z-scores for short and long terms
 
-    execute_order(asset, price, ema7, ema50, trend7, trend50)
+    signal = generate_signal(
+      price, 
+      shortTermEMA,
+      longTermEMA,
+      shortTermTrend,
+      longTermTrend,
+      shortTermZScore,
+      longTermZScore
+    )
 
-  finally when removed return
+    ...handle signal separately
 ```

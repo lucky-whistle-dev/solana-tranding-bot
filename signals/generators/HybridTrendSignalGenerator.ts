@@ -50,6 +50,8 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
     this.zLog.debug(`current zscores: ${JSON.stringify({ shortTerm: shortTermZScore, longTerm: longTermZScore }, null, 2)}`);
 
     if (longTermTrend >= 0 && shortTermTrend >= 0) {
+      this.zLog.debug('increasing growth on upward trend');
+
       if (longTermTrend > shortTermTrend) {
         this.zLog.debug('possible strong upward momentum with long term increasing faster than short term');
         
@@ -65,10 +67,24 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
           this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'BUY';
         }
+      } else {
+        this.zLog.debug('possible slowing upward momentum with long term increasing faster than short term');
+
+        if (shortTermThreshold === 'OVERBOUGHT') {
+          this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
+          return 'SELL'
+        }
+
+        if (shortTermThreshold === 'OVERSOLD' && (longTermThreshold === 'OVERSOLD' || longTermThreshold === '-INSIGNIFICANT')) {
+          this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
+          return 'BUY';
+        }
       }
     }
 
     if (longTermTrend >= 0 && shortTermTrend < 0) {
+      this.zLog.debug('slowing growth on upward trend');
+
       if (longTermTrend > Math.abs(shortTermTrend)) {
         this.zLog.debug('possible weak upward momentum with long term increasing faster than short term');
         
@@ -84,23 +100,28 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
           this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'BUY';
         }
+      } else {
+        this.zLog.debug('possible weak downward short term momentum with short term increasing faster than long term');
 
+        if (shortTermThreshold === 'OVERBOUGHT' || shortTermThreshold === '+INSIGNIFICANT') {
+          this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
+          return 'SELL';
+        }
       }
     }
 
     if (longTermTrend < 0 && shortTermTrend >= 0) {
+      this.zLog.debug('slowing decay on downward trend');
+
       if (Math.abs(longTermTrend) >= shortTermTrend) {
-        this.zLog.debug('possible weak downward momentum with long term increasing faster than short term');
+        this.zLog.debug('possible increasing downward momentum with long term increasing faster than short term');
         
-        if (
-          (shortTermThreshold === 'OVERBOUGHT' || shortTermThreshold === '+INSIGNIFICANT')
-          && (longTermThreshold === 'OVERBOUGHT' || longTermThreshold === '+INSIGNIFICANT')
-        ) {
+        if (longTermThreshold === 'OVERBOUGHT' || longTermThreshold === '+INSIGNIFICANT') {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'SELL';
         }
       } else {
-        this.zLog.debug('possible weak downward momentum with short term increasing faster than long term');
+        this.zLog.debug('possible weak upward momentum with short term increasing faster than long term');
 
         if (shortTermThreshold === 'OVERSOLD' && (longTermThreshold === 'OVERSOLD' || longTermThreshold === '-INSIGNIFICANT')) {
           this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
@@ -110,27 +131,19 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
     }
 
     if (longTermTrend < 0 && shortTermTrend < 0) {
-      this.zLog.debug('possible strong downward momentum');
+      this.zLog.debug('increasing decay on downard trend');
 
       if (Math.abs(longTermTrend) >= shortTermTrend) {
+        this.zLog.debug('possible slowing downtrend with long term increasing faster than short term');
+
         if (shortTermThreshold === 'OVERBOUGHT' && longTermThreshold !== 'OVERSOLD') {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'SELL';
         }
-  
-        if (shortTermThreshold === 'OVERSOLD' && longTermThreshold === 'OVERSOLD') {
-          this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
-          return 'BUY';
-        }
       } else {
-        if ((shortTermThreshold === 'OVERBOUGHT' || shortTermThreshold === '+INSIGNIFICANT') && longTermThreshold === 'OVERBOUGHT') {
+        if (longTermThreshold === 'OVERBOUGHT') {
           this.zLog.debug(`deviation from mean shows possibly overbought, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
           return 'SELL';
-        }
-  
-        if (shortTermThreshold === 'OVERSOLD' && longTermThreshold === 'OVERSOLD') {
-          this.zLog.debug(`deviation from mean shows possibly oversold, with short term zScore: ${shortTermZScore}, and long term zScore: ${longTermZScore}`);
-          return 'BUY';
         }
       }
     }
