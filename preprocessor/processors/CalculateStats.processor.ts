@@ -47,7 +47,7 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
       time_to: currentFrame
     });
 
-    this.zLog.debug(`latest ohlc historical entry: ${last(ohlcResp.data.items)}`);
+    this.zLog.debug(`latest ohlc historical entry: ${JSON.stringify(last(ohlcResp.data.items), null, 2)}`);
     const latestClosing = last(ohlcResp.data.items).c;
 
     const updatedShortTermEMA = calculateEMA(latestClosing, shortTerm.ema, shortTerm.interval);
