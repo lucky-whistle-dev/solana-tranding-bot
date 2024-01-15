@@ -98,7 +98,7 @@ $$
     \text{z-score} > 1.5 & \text{overbought} \\
     1.5 > \text{z-score} >= 0 & \text{positive insignificant} \\
     0 > \text{z-score} >= -1.5 & \text{negative insignificant} \\
-    \text{z-score} > -1.5 & \text{oversold}
+    -1.5 > \text{z-score} & \text{oversold}
   \end{cases}
 \end{align}
 $$
