@@ -212,13 +212,10 @@ Selected asset will be continuously listened on for updated data:
 ```
 func price_listener(asset):
   for price of incoming prices until asset is removed:
-    { shortTermEMA, longTermEMA } = calculate ema for short and long terms
-    
-    { shortTermTrend, longTermTrend } = calculate trend for short and long terms
-    
-    { shortTermSTD, longTermSTD } = calculate trend for short and long terms
-    
-    { shortTermZScore, longTermZScore } = calculate z-scores for short and long terms
+    shortTermEMA, longTermEMA = calculate ema for short and long terms
+    shortTermTrend, longTermTrend = calculate trend for short and long terms
+    shortTermSTD, longTermSTD = calculate trend for short and long terms
+    shortTermZScore, longTermZScore = calculate z-scores for short and long terms
 
     signal = generate_signal(
       price, 
