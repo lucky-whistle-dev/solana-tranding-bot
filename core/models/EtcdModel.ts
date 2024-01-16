@@ -2,9 +2,7 @@ import { InferType, InferTypeDeep } from '@core/types/Util';
 
 
 export type Etcd3PrefixedKey<K, PRF extends string = undefined> = 
-  PRF extends undefined 
-  ? InferType<K, false, string> 
-  : `${PRF}/${InferType<K, false, string>}`;
+  PRF extends undefined ? InferType<K, false, string> : `${PRF}/${InferType<K, false, string>}`;
 
 
 export type EtcdModel<V, K, PRF = unknown> = 
