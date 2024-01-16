@@ -1,5 +1,5 @@
 import { EtcdModel } from '@core/models/EtcdModel';
-import { InferType, InferTypeDeep } from '@core/types/Util';
+import { InferType, InferTypeDeep } from '@core/types/Infer';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenAddress } from '@common/types/token/Token';
 

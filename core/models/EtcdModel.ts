@@ -1,4 +1,4 @@
-import { InferType, InferTypeDeep } from '@core/types/Util';
+import { InferType, InferTypeDeep } from '@core/types/Infer';
 
 
 export type Etcd3PrefixedKey<K, PRF extends string = undefined> = 

@@ -3,7 +3,7 @@ const { first, transform } = lodash;
 
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { MakeOptional } from '@core/types/Util';
+import { MakeOptional } from '@core/types/Infer';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenStatsModel } from '@common/models/TokenStats';

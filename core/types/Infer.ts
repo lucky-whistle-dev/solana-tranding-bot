@@ -1,14 +1,12 @@
 export type MakeOptional<T, K> = 
-  Omit<T, InferType<K, false, keyof T>> & Partial<Pick<T, InferType<K, false, keyof T>>>;
+  Omit<T, InferType<K, false, keyof T>> 
+    & Partial<Pick<T, InferType<K, false, keyof T>>>;
 
-export type InferType<T, STRCT = false, TYP = unknown>  = 
+export type InferType<T, STRCT = false, TYP = unknown> = 
   T extends infer R 
-  ? R extends TYP 
-    ? R : TYP
-  : STRCT extends true 
-    ? never 
-    : T extends TYP 
-      ? T : TYP;
+  ? R extends TYP ? R : TYP
+  : STRCT extends true ? never 
+    : T extends TYP ? T : TYP;
     
 type InferMappedType<R, STRCT> = { 
   [K in keyof R]: 

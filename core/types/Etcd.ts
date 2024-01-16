@@ -1,7 +1,7 @@
 import { ILeaseOptions, IKeyValue, IWatchResponse } from 'etcd3';
 
 import { Etcd3PrefixedKey, EtcdModel } from '@core/models/EtcdModel';
-import { InferType } from '@core/types/Util';
+import { InferType } from '@core/types/Infer';
 
 
 export type ElectionEvent = 'elected';
