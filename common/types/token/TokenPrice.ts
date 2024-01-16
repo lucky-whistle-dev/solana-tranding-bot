@@ -1,5 +1,5 @@
 import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, Currency, Timeframe } from '@common/types/token/Token';
-import { BirdeyeResponse, BirdeyeTokenRequest } from '../external/Birdeye';
+import { BirdeyeResponse, BirdeyeTokenRequest } from '@common/types/external/Birdeye';
 
 
 export type TokenPriceEvents = 'SUBSCRIBE_PRICE' | 'PRICE_DATA' | 'WELCOME';

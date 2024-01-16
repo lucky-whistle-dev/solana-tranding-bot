@@ -9,8 +9,8 @@ import { calculateEMA, calculateSMA, calculateStdEMA, calculateStdSMA, calculate
 import { envLoader } from '@common/EnvLoader';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
-import { TokenStatsSchema, StatsEntry } from '@common/models/TokenStats';
-import { AuditSchema, Action } from '@common/models/Audit';
+import { AuditModel } from '@common/models/Audit';
+import { StatsEntry, TokenStatsModel } from '@common/models/TokenStats';
 
 
 const FRAME_SIZE_IN_MIN = 5;
@@ -29,12 +29,13 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     return true;
   }
 
-  async process(): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])> {
+  async process(): Promise<(AuditModel<StatsEntry>['ValueType']['action'])> {
     const now = new Date();
-    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
-    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
-    const prevStatsEntry: TokenStatsSchema['parsedValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
+    const start: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
+
+    const prevStatsEntry: TokenStatsModel['ValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     const { shortTerm, longTerm, timestamp } = prevStatsEntry;
     
     const prevTimeframe = prevStatsEntry ? new Date(timestamp) : subDays(new Date(), 1);
@@ -73,14 +74,14 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     return { action: 'calculateStats', payload: value };
   }
 
-  async seed(now: Date): Promise<(AuditSchema<Action, StatsEntry>)['parsedValueType']['action']> {
-    const start: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
-    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
+  async seed(now: Date): Promise<(AuditModel<StatsEntry>)['ValueType']['action']> {
+    const start: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
-    const prevStatsEntry: TokenStatsSchema['parsedValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
+    const prevStatsEntry: TokenStatsModel['ValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     if (prevStatsEntry) return null;
 
-    let seededEntry: TokenStatsSchema['parsedValueType']
+    let seededEntry: TokenStatsModel['ValueType']
     for (const [ frame, _ ] of Object.entries(Array(FRAMES_IN_DAY_IN_MIN).fill(0))) {
       const currFrameSize = MINUTES_IN_DAY - (FRAME_SIZE_IN_MIN * +frame);
       const frameAgo = subMinutes(now, currFrameSize);

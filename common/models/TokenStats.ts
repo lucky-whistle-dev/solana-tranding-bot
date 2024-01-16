@@ -1,4 +1,5 @@
-import { EtcdSchema } from '@core/models/EtcdModel';
+import { EtcdModel } from '@core/models/EtcdModel';
+import { InferType } from '@core/types/Util';
 import { ISODateString } from '@core/types/ISODate';
 
 
@@ -8,23 +9,17 @@ export type StatsKeySuffix = ISODateString;
 export type ShortInterval = 1 | 7;
 export type LongInterval = 50 | 200;
 
-type TimeInterval<T extends ShortInterval | LongInterval> = 
-  T extends ShortInterval
-  ? ShortInterval 
-  : LongInterval;
-
-export type StatsForInterval<T extends ShortInterval | LongInterval> = {
-  interval: TimeInterval<T>;
+export type StatsForInterval<T> = {
+  interval: InferType<T>;
   ema: number;
   std: number;
   zscore: number;
 };
 
-export interface StatsEntry<SHRT extends ShortInterval = undefined, LONG extends LongInterval = undefined> {
-  shortTerm: SHRT extends undefined ? StatsForInterval<7> : StatsForInterval<SHRT>;
-  longTerm: LONG extends undefined ? StatsForInterval<50> : StatsForInterval<LONG>;
+export interface StatsEntry {
+  shortTerm: StatsForInterval<ShortInterval>;
+  longTerm: StatsForInterval<LongInterval>;
   timestamp: ISODateString;
 }
 
-export type TokenStatsSchema<SHRT extends ShortInterval = 7, LONG extends LongInterval = 50> = 
-  EtcdSchema<StatsKeySuffix, StatsEntry<SHRT, LONG>, StatsKeyPrefix>;
+export type TokenStatsModel = EtcdModel<StatsEntry, StatsKeySuffix, StatsKeyPrefix>;

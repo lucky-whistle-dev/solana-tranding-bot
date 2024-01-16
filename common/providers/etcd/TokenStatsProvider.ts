@@ -3,55 +3,56 @@ const { first, transform } = lodash;
 
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { MakeOptional } from '@core/utils/Utils';
+import { MakeOptional } from '@core/types/Util';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
-import { TokenStatsSchema } from '@common/models/TokenStats';
+import { TokenStatsModel } from '@common/models/TokenStats';
 
 
 export class TokenStatsProvider {
-  private zLog: LogProvider = new LogProvider(TokenStatsProvider.name);
-
-  constructor(private etcdProvider: ETCDProvider) {}
+  constructor(
+    private etcdProvider: ETCDProvider, 
+    private zLog: LogProvider = new LogProvider(TokenStatsProvider.name)
+  ) {}
 
   async insertTokenStatsEntry(
-    payload: MakeOptional<TokenStatsSchema['parsedValueType'], 'timestamp'>
-  ): Promise<{ key: TokenStatsSchema['formattedKeyType'], value: TokenStatsSchema['parsedValueType'] }> {
+    payload: MakeOptional<TokenStatsModel['ValueType'], 'timestamp'>
+  ): Promise<{ key: TokenStatsModel['KeyType'], value: TokenStatsModel['ValueType'] }> {
     const formattedDateFrom = (() => {
       if (payload.timestamp) return payload.timestamp;
       return new Date().toISOString() as ISODateString;
     })();
 
-    const key: TokenStatsSchema['formattedKeyType'] = `tokenStats/${formattedDateFrom}`;
-    const formattedPayload: TokenStatsSchema['parsedValueType'] = { timestamp: formattedDateFrom, ...payload }
-    await this.etcdProvider.put<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType']>(key, formattedPayload);
+    const key: TokenStatsModel['KeyType'] = `tokenStats/${formattedDateFrom}`;
+    const formattedPayload: TokenStatsModel['ValueType'] = { timestamp: formattedDateFrom, ...payload }
+    await this.etcdProvider.put({ key, value: formattedPayload });
 
     return { key, value: formattedPayload };
   }
 
-  async getByKey(key: TokenStatsSchema['formattedKeyType']): Promise<TokenStatsSchema['parsedValueType']> {
-    return this.etcdProvider.get<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType']>(key);
+  async getByKey(key: TokenStatsModel['KeyType']): Promise<TokenStatsModel['ValueType']> {
+    return this.etcdProvider.get<TokenStatsModel['ValueType'], TokenStatsModel['KeyType']>(key);
   }
 
-  async getLatest(): Promise<TokenStatsSchema['parsedValueType']> {
-    const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
+  async getLates(): Promise<TokenStatsModel['ValueType']> {
+    const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
       prefix: 'tokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: 1 
     });
 
-    const latestEntry: TokenStatsSchema['parsedValueType'] = getAllResp[first(Object.keys(getAllResp))];
+    const latestEntry: TokenStatsModel['ValueType'] = getAllResp[first(Object.keys(getAllResp))];
     return latestEntry;
   }
 
-  async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'sort' | 'limit'>): Promise<TokenStatsSchema['parsedValueType'][]> {
-    const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
+  async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'sort' | 'limit'>): Promise<TokenStatsModel['ValueType'][]> {
+    const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
       prefix: 'tokenStats', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range(opts: TokenStatsProcessingOpts<'range'>): Promise<TokenStatsSchema['parsedValueType'][]> {
-    const getAllResp: GetAllResponse<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix']> = await this.etcdProvider.getAll({ 
+  async range(opts: TokenStatsProcessingOpts<'range'>): Promise<TokenStatsModel['ValueType'][]> {
+    const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType']> = await this.etcdProvider.getAll({ 
       range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
@@ -60,4 +61,17 @@ export class TokenStatsProvider {
 }
 
 
-type TokenStatsProcessingOpts<TYP extends 'iterate' | 'range' = undefined> = ETCDDataProcessingOpts<TokenStatsSchema['formattedKeyType'], TokenStatsSchema['parsedValueType'], TokenStatsSchema['prefix'], TYP>;
+type TokenStatsProcessingOpts<TYP = undefined> = 
+  ETCDDataProcessingOpts<
+    TokenStatsModel['ValueType'], 
+    TokenStatsModel['KeyType'], 
+    TokenStatsModel['Prefix'], 
+    (
+      TYP extends 'iterate' 
+      ? 'iterate' 
+      : TYP extends 'range' 
+      ? 'range' 
+      : TYP extends undefined 
+      ? 'iterate' 
+      : never
+    )>;

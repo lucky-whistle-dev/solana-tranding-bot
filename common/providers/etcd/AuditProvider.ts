@@ -3,7 +3,7 @@ import lodash from 'lodash';
 const { first, transform } = lodash;
 
 import { envLoader } from '@common/EnvLoader';
-import { Action, AuditEntry, AuditSchema } from '@common/models/Audit';
+import { AuditModel } from '@common/models/Audit';
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
@@ -17,64 +17,57 @@ export class AuditProvider {
 
   constructor(private etcdProvider: ETCDProvider) {}
 
-  async insertAuditEntry<T extends Action, V = string>(
-    payload: Pick<(AuditSchema<T, V>)['parsedValueType'], 'action'>
-  ): Promise<{ key: (AuditSchema<T, V>)['formattedKeyType'], value: (AuditSchema<T, V>)['parsedValueType'] }> {
+  async insertAuditEntry<V>(payload: Pick<AuditModel<V>['ValueType'], 'action'>): Promise<{ key: AuditModel<V>['KeyType'], value: AuditModel<V>['ValueType'] }> {
     const now = new Date();
     const formattedNow: ISODateString = now.toISOString() as ISODateString;
 
-    const key: (AuditSchema<T, V>)['formattedKeyType'] = `auditTrail/${formattedNow}`;
-    const validatedPayload: Required<(AuditSchema<T, V>)['parsedValueType']> = await this.generateValidatedPayload({ auditEntrySource: HOSTNAME, timestamp: formattedNow, ...payload });
+    const key: AuditModel<V>['KeyType'] = `auditTrail/${formattedNow}`;
+    const validatedPayload: Required<AuditModel<V>['ValueType']> = await this.generateValidatedPayload({ auditEntrySource: HOSTNAME, timestamp: formattedNow, ...payload });
     
-    await this.etcdProvider.put<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']>(key, validatedPayload);
+    await this.etcdProvider.put({ key, value: validatedPayload });
     return { key, value: validatedPayload };
   }
-
-  async getByKey<T extends Action, V extends string>(key: (AuditSchema<T, V>)['formattedKeyType']): Promise<(AuditSchema<T, V>)['parsedValueType']> {
-    return this.etcdProvider.get<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']>(key);
+  
+  async getByKey<V>(key: AuditModel<V>['KeyType']): Promise<Partial<AuditModel<V>['ValueType']>> {
+    return this.etcdProvider.get(key);
   }
 
-  async getLatest<T extends Action, V>(): Promise<(AuditSchema<T, V>)['parsedValueType']> {
-    const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix']> = await this.etcdProvider.getAll({ 
+  async getLatest<V>(): Promise<AuditModel<V>['ValueType']> {
+    const getAllResp: GetAllResponse<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix']> = await this.etcdProvider.getAll({ 
       prefix: 'auditTrail', sort: { on: 'Key', direction: 'Descend' }, limit: 1 
     });
 
-    const latestEntry: (AuditSchema<T, V>)['parsedValueType'] = getAllResp[first(Object.keys(getAllResp))];
+    const latestEntry: AuditModel<V>['ValueType'] = getAllResp[first(Object.keys(getAllResp))];
     return latestEntry;
   }
 
-  async iterateFromLatest<T extends Action, V>(opts: Pick<AuditProcessingOpts<T, V>, 'sort' | 'limit'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
-    const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix']> = await this.etcdProvider.getAll({ 
+  async iterateFromLatest<V>(opts: Pick<AuditProcessingOpts<AuditModel<V>['ValueType']>, 'sort' | 'limit'>): Promise<AuditModel<V>['ValueType'][]> {
+    const getAllResp: GetAllResponse<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix']> = await this.etcdProvider.getAll({ 
       prefix: 'auditTrail', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range<T extends Action, V>(opts: AuditProcessingOpts<T, (AuditSchema<T, V>)['parsedValueType'], 'range'>): Promise<(AuditSchema<T, V>)['parsedValueType'][]> {
-    const getAllResp: GetAllResponse<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType']> = await this.etcdProvider.getAll({ 
+  async range<V>(opts: AuditProcessingOpts<AuditModel<V>['ValueType'], 'range'>): Promise<AuditModel<V>['ValueType'][]> {
+    const getAllResp: GetAllResponse<AuditModel<V>['ValueType'], AuditModel<V>['KeyType']> = await this.etcdProvider.getAll({ 
       range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  private async generateValidatedPayload<T extends Action, V>(
-    partialPayload: Pick<(AuditSchema<T, V>)['parsedValueType'], 'action' | 'auditEntrySource' | 'timestamp'>
-  ): Promise<(Required<(AuditSchema<T, V>)['parsedValueType']>)> {
+  private async generateValidatedPayload<V>(
+    partialPayload: Pick<AuditModel<V>['ValueType'], 'action' | 'auditEntrySource' | 'timestamp'>
+  ): Promise<(Required<AuditModel<V>['ValueType']>)> {
     const latest = await this.getLatest();
-    const defaultPayload: Pick<AuditEntry<T, V>, 'holdings' | 'performance'> = {
-      holdings: { [`${envLoader.TOKEN_ADDRESS}`]: { amount: 0, updatedAt: partialPayload.timestamp, averagePriceBought: 0 } },
-      performance: { successRate: 0, totalTrades: 0 }
-    };
-
-    const validatedPayload = { ...(latest ?? defaultPayload), ...partialPayload };
-    this.zLog.debug(`validated payload for audit entry: ${JSON.stringify(validatedPayload, null, 2)}`);
+    const validatedPayload = { ...latest, ...partialPayload };
     
+    this.zLog.debug(`validated payload for audit entry: ${JSON.stringify(validatedPayload, null, 2)}`);
     return validatedPayload;
   }
 }
 
 
-type AuditProcessingOpts<T extends Action, V = string, TYP extends 'iterate' | 'range' = 'iterate'> = 
-  ETCDDataProcessingOpts<(AuditSchema<T, V>)['formattedKeyType'], (AuditSchema<T, V>)['parsedValueType'], (AuditSchema<T, V>)['prefix'], TYP>;
+type AuditProcessingOpts<V, TYP = 'iterate'> = 
+  ETCDDataProcessingOpts<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix'], TYP extends 'iterate' ? 'iterate' : 'range'>;

@@ -1,20 +1,24 @@
-import { TokenAddress } from '@common/types/token/Token';
-import { EtcdSchema } from '@core/models/EtcdModel';
+import { EtcdModel } from '@core/models/EtcdModel';
+import { InferType, InferTypeDeep } from '@core/types/Util';
 import { ISODateString } from '@core/types/ISODate';
+import { TokenAddress } from '@common/types/token/Token';
 
 
 export type AuditKeyPrefix = 'auditTrail';
 export type AuditKeySuffix = ISODateString;
 
-export type PreprocessorAction = 'calculateStats';
+export type PreProcessorAction = 'calculateStats';
 export type TraderAction = 'swap';
-export type AnalyzerAction = 'updateRisk' | 'updateExpectedGain' | 'updateStopLoss';
+export type PostProcessorAction = 'updateRisk' | 'updateExpectedGain' | 'updateStopLoss';
 
-export type Action = TraderAction | PreprocessorAction;
+export type Action = 
+  TraderAction 
+  | PreProcessorAction 
+  | PostProcessorAction;
 
-export interface AuditAction<T extends Action, V = string>{
-  action: T;
-  payload: V;
+export interface AuditAction<T, V>{
+  action: InferType<T, true>;
+  payload: InferTypeDeep<V>;
 }
 
 export type AuditHoldings = { 
@@ -30,12 +34,12 @@ export interface AuditPerformance {
   totalTrades: number;
 }
 
-export interface AuditEntry<T extends Action, V = string> {
-  action: AuditAction<T, V>;
+export interface AuditEntry<V> {
+  action: AuditAction<Action, V>;
   auditEntrySource: string;
   holdings: AuditHoldings;
   performance: AuditPerformance;
   timestamp: ISODateString;
 }
 
-export type AuditSchema<T extends Action, V = string> = EtcdSchema<AuditKeySuffix, AuditEntry<T, V>, AuditKeyPrefix>;
+export type AuditModel<V> = EtcdModel<AuditEntry<V>, AuditKeySuffix, AuditKeyPrefix>;

@@ -1,6 +1,6 @@
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { Action, AuditSchema } from '@common/models/Audit';
+import { AuditModel } from '@common/models/Audit';
 import { StatsEntry } from '@common/models/TokenStats';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 
@@ -14,13 +14,12 @@ export abstract class BaseProcessorProvider {
   constructor(protected name: string) { this.zLog = new LogProvider(this.name); } 
 
   abstract initInternalProviders(): boolean;
-  abstract process(): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])>;
-  abstract seed(now: Date): Promise<((AuditSchema<Action, StatsEntry>)['parsedValueType']['action'])>;
+  abstract process(): Promise<(AuditModel<StatsEntry>['ValueType']['action'])>;
+  abstract seed(now: Date): Promise<(AuditModel<StatsEntry>['ValueType']['action'])>;
 
   private init() {
     this.etcProvider = new ETCDProvider();
     this.auditProvider = new AuditProvider(this.etcProvider);
-
     this.initInternalProviders();
   }
 
@@ -31,7 +30,7 @@ export abstract class BaseProcessorProvider {
       
       this.init();
       const payload = await this.seed(now);
-      await this.auditProvider.insertAuditEntry({ action: payload });
+      await this.auditProvider.insertAuditEntry<typeof payload.payload>({ action: payload });
       
       return true;
     } catch (err) {

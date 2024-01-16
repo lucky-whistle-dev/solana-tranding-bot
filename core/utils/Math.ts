@@ -11,7 +11,7 @@ export const calculateSMA = (values: number[]): number => {
   return sum / values.length;
 }
 
-export const calculateDeviation = (n1: number, n2: number): number => n1 - n2;
+export const calculateDeviation = (curr: number, mean: number): number => curr - mean;
 
 export const calculateStdSMA = (values: number[]): number => {
   if (values.length < 1) throw new Error('values must be at least a series one element long')

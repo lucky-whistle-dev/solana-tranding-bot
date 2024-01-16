@@ -3,7 +3,7 @@ import { LogProvider } from '@core/providers/LogProvider';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
 import { Signal } from '@common/types/Signal';
-import { LongInterval, ShortInterval, StatsEntry } from '@common/models/TokenStats';
+import { StatsEntry } from '@common/models/TokenStats';
 
 
 export abstract class BaseSignalGeneratorProvider {
@@ -17,6 +17,6 @@ export abstract class BaseSignalGeneratorProvider {
     return this.runModel({ price, stats });
   }
 
-  protected abstract getApplicableStats(): Promise<StatsEntry<ShortInterval, LongInterval>>;
-  protected abstract runModel(opts: { price: number, stats: StatsEntry<ShortInterval, LongInterval>}): Promise<Signal>;
+  protected abstract getApplicableStats(): Promise<StatsEntry>;
+  protected abstract runModel(opts: { price: number, stats: StatsEntry }): Promise<Signal>;
 }

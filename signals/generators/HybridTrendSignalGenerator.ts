@@ -11,7 +11,7 @@ import { ISODateString } from '@core/types/ISODate';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 import { TokenStatsProvider } from '@common/providers/etcd/TokenStatsProvider';
 import { Signal } from '@common/types/Signal';
-import { LongInterval, ShortInterval, StatsEntry, TokenStatsSchema } from '@common/models/TokenStats';
+import { StatsEntry, TokenStatsModel } from '@common/models/TokenStats';
 
 
 export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
@@ -19,16 +19,16 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
     super(auditProvider, tokenStatsProvider, new LogProvider(HybridTrendSignalProvider.name));
   }
 
-  protected async getApplicableStats(): Promise<StatsEntry<ShortInterval, LongInterval>> {
+  protected async getApplicableStats(): Promise<StatsEntry> {
     const now = new Date();
-    const start: TokenStatsSchema['formattedKeyType']  = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
-    const end: TokenStatsSchema['formattedKeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
+    const start: TokenStatsModel['KeyType']  = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
     const latestFromYDay = await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 });
     return first(latestFromYDay);
   }
 
-  protected async runModel(opts: { price: number, stats: StatsEntry<ShortInterval, LongInterval> }): Promise<Signal> {
+  protected async runModel(opts: { price: number, stats: StatsEntry }): Promise<Signal> {
     const unixTimeNow = convertISOToUnix(new Date().toISOString() as ISODateString);
     const unixTimePrevious = convertISOToUnix(opts.stats.timestamp);
 
@@ -163,5 +163,6 @@ const determineZScoreThreshold = (zscore: number): 'OVERBOUGHT' | '+INSIGNIFICAN
   if (zscore > 1.5) return 'OVERBOUGHT';
   if (zscore > 0) return '+INSIGNIFICANT';
   if (zscore > -1.5) return '-INSIGNIFICANT';
+  
   return 'OVERSOLD';
 };
