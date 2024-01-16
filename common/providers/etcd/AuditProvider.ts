@@ -13,9 +13,7 @@ import { ISODateString } from '@core/types/ISODate';
 const HOSTNAME = hostname();
 
 export class AuditProvider {
-  private zLog: LogProvider = new LogProvider(AuditProvider.name);
-
-  constructor(private etcdProvider: ETCDProvider) {}
+  constructor(private etcdProvider: ETCDProvider, private zLog: LogProvider = new LogProvider(AuditProvider.name)) {}
 
   async insertAuditEntry<V>(payload: Pick<AuditModel<V>['ValueType'], 'action'>): Promise<{ key: AuditModel<V>['KeyType'], value: AuditModel<V>['ValueType'] }> {
     const now = new Date();

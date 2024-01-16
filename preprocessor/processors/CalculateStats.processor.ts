@@ -35,7 +35,7 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     const start: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
     const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
-    const prevStatsEntry: TokenStatsModel['ValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
+    const prevStatsEntry = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     const { shortTerm, longTerm, timestamp } = prevStatsEntry;
     
     const prevTimeframe = prevStatsEntry ? new Date(timestamp) : subDays(new Date(), 1);
@@ -78,7 +78,7 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     const start: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
     const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
-    const prevStatsEntry: TokenStatsModel['ValueType'] = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
+    const prevStatsEntry = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     if (prevStatsEntry) return null;
 
     let seededEntry: TokenStatsModel['ValueType']
