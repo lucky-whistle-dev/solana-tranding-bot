@@ -183,8 +183,12 @@ let test = {
 
 type TestObj = { hello: string, world: string };
 
-/*
-const hi: InferType<TestObj & typeof test, 'OPTIONAL', 'hello'> = {
-  hl
+
+const hiArr = [
+  1,
+  { hi: 'world'}
+]
+
+
+const hi: InferType<typeof hiArr & typeof test, 'OPTIONAL', 'hello'> = {
 }
-*/
