@@ -88,7 +88,6 @@ type __inferTypeDeep<T, MUT = unknown, KEYS = unknown, STRCT = false> =
     : __inferType<P, STRCT>
   : __inferType<T, STRCT>
 
-
 /*
   InferType
     Used to strictly type generic params and create types from objects.
