@@ -36,18 +36,16 @@ type __optionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
     Determine the type of an object and the level of strictness on the object.
     Infer the type of generic T through R.
 */
-type __inferType<T, STRCT = false> = 
-  T extends infer R 
-  ? R 
-  : STRCT extends true 
-  ? never 
-  : T;
+type __inferType<T, STRCT = false> = T extends infer R ? R : STRCT extends true ? never : T;
 
 /*
   __isMappedType
     Determine if an object is a mapped type or a value based on its structure
 */
-type __isMappedType<T> = T extends { [K in keyof T]: T[K] } ? true : false;
+type __isMappedType<T> = 
+  T extends { 
+    [K in keyof T]: T[K] extends infer U ? __inferTypeDeep<U> : T[K] 
+  } ? true : false;
 
 /*
   __inferMappedType
@@ -57,9 +55,9 @@ type __inferMappedType<T, STRCT = false> =
   T extends infer R ? { 
     [K in keyof R]: 
       R[K] extends infer U 
-      ? __inferType<U, STRCT>
-      : R[K] 
-  } : never;
+      ? __inferTypeDeep<U, STRCT>
+      : R[K]
+  } : T;
 
 /*
   __inferTypeDeep
@@ -69,24 +67,24 @@ type __inferMappedType<T, STRCT = false> =
 */
 type __inferTypeDeep<T, MUT = unknown, KEYS = unknown, STRCT = false> =
   T extends infer P
-    ? __isMappedType<P> extends true
-      ? MUT extends UpdateSubsetTypeAction
-        ? KEYS extends keyof __inferMappedType<P>
-          ? MUT extends 'OPTIONAL' 
-          ? __optionalFields<__inferMappedType<P>, KEYS>
-          : MUT extends 'ENFORCE'
-          ? __enforcedFields<__inferMappedType<P>, KEYS>
-          : MUT extends 'OMIT' 
-          ? Omit<__inferMappedType<P>, KEYS>
-          : Pick<__inferMappedType<P>, KEYS>
-        : __inferMappedType<P>
-      : MUT extends UpdatTypeAction
-        ? MUT extends 'REQUIRE ALL' 
-        ? Required<__inferMappedType<P>>
-        : Partial<__inferMappedType<P>>
-      : never
-    : __inferType<P, STRCT>
-  : __inferType<T, STRCT>
+  ? __isMappedType<P> extends true
+    ? MUT extends UpdateSubsetTypeAction
+      ? KEYS extends keyof __inferMappedType<P>
+        ? MUT extends 'OPTIONAL' 
+        ? __optionalFields<__inferMappedType<P>, KEYS>
+        : MUT extends 'ENFORCE'
+        ? __enforcedFields<__inferMappedType<P>, KEYS>
+        : MUT extends 'OMIT' 
+        ? Omit<__inferMappedType<P>, KEYS>
+        : Pick<__inferMappedType<P>, KEYS>
+      : __inferMappedType<P>
+    : MUT extends UpdatTypeAction
+      ? MUT extends 'REQUIRE ALL' 
+      ? Required<__inferMappedType<P>>
+      : Partial<__inferMappedType<P>>
+    : __inferMappedType<P>
+  : __inferType<P, STRCT>
+  : __inferType<T, STRCT>;
 
 /*
   InferType
