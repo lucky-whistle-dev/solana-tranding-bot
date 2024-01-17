@@ -17,10 +17,10 @@ export class AuditProvider {
 
   async insertAuditEntry<V>(payload: Pick<AuditModel<V>['ValueType'], 'action'>): Promise<{ key: AuditModel<V>['KeyType'], value: AuditModel<V>['ValueType'] }> {
     const now = new Date();
-    const formattedNow: ISODateString = now.toISOString() as ISODateString;
+    const formattedNow: ISODateString  = now.toISOString() as ISODateString;
 
     const key: AuditModel<V>['KeyType'] = `auditTrail/${formattedNow}`;
-    const validatedPayload: Required<AuditModel<V>['ValueType']> = await this.generateValidatedPayload({ auditEntrySource: HOSTNAME, timestamp: formattedNow, ...payload });
+    const validatedPayload = await this.generateValidatedPayload({ auditEntrySource: HOSTNAME, timestamp: formattedNow, ...payload });
     
     await this.etcdProvider.put({ key, value: validatedPayload });
     return { key, value: validatedPayload };
@@ -47,8 +47,8 @@ export class AuditProvider {
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
   }
 
-  async range<V>(opts: AuditProcessingOpts<AuditModel<V>['ValueType'], 'range'>): Promise<AuditModel<V>['ValueType'][]> {
-    const getAllResp: GetAllResponse<AuditModel<V>['ValueType'], AuditModel<V>['KeyType']> = await this.etcdProvider.getAll({ 
+  async range<V>(opts: AuditProcessingOpts<V, 'range'>): Promise<AuditModel<V>['ValueType'][]> {
+    const getAllResp: GetAllResponse<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix']> = await this.etcdProvider.getAll({ 
       range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
@@ -57,8 +57,8 @@ export class AuditProvider {
 
   private async generateValidatedPayload<V>(
     partialPayload: Pick<AuditModel<V>['ValueType'], 'action' | 'auditEntrySource' | 'timestamp'>
-  ): Promise<(Required<AuditModel<V>['ValueType']>)> {
-    const latest = await this.getLatest();
+  ): Promise<AuditModel<V>['ValueType']> {
+    const latest = await this.getLatest<V>();
     const validatedPayload = { ...latest, ...partialPayload };
     
     this.zLog.debug(`validated payload for audit entry: ${JSON.stringify(validatedPayload, null, 2)}`);
@@ -67,5 +67,5 @@ export class AuditProvider {
 }
 
 
-type AuditProcessingOpts<V, TYP = 'iterate'> = 
-  ETCDDataProcessingOpts<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix'], TYP extends 'iterate' ? 'iterate' : 'range'>;
+type AuditProcessingOpts<V, TYP extends 'iterate' | 'range'= 'iterate'> = 
+  ETCDDataProcessingOpts<AuditModel<V>['ValueType'], AuditModel<V>['KeyType'], AuditModel<V>['Prefix'], TYP>;

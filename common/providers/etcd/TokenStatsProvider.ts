@@ -3,7 +3,7 @@ const { first, transform } = lodash;
 
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
-import { MakeOptional } from '@core/types/Infer';
+import { InferType } from '@core/types/Infer';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenStatsModel } from '@common/models/TokenStats';
@@ -16,9 +16,9 @@ export class TokenStatsProvider {
   ) {}
 
   async insertTokenStatsEntry(
-    payload: MakeOptional<TokenStatsModel['ValueType'], 'timestamp'>
+    payload: InferType<TokenStatsModel['ValueType'], { action: 'OPTIONAL', keys: 'timestamp' }>
   ): Promise<{ key: TokenStatsModel['KeyType'], value: TokenStatsModel['ValueType'] }> {
-    const formattedDateFrom = (() => {
+    const formattedDateFrom = ((): ISODateString => {
       if (payload.timestamp) return payload.timestamp;
       return new Date().toISOString() as ISODateString;
     })();

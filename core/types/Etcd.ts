@@ -9,19 +9,13 @@ export type ElectionListener = (elected: boolean) => void;
 
 export type WatchEvent = 'data' | 'delete' | 'put';
 export type WatchListener<EVT extends WatchEvent> = 
-  EVT extends 'data' 
-  ? (watchResp: IWatchResponse) => void
-  : (keyVal: IKeyValue) => void;
+  EVT extends 'data' ? (watchResp: IWatchResponse) => void : (keyVal: IKeyValue) => void;
 
-export type InitWatchOpts<EVT extends 'key' | 'prefix', K extends string, PRF extends string = undefined> = 
-  EVT extends 'key'
-  ? { key: Etcd3PrefixedKey<K, PRF> }
-  : { prefix: InferType<PRF, true> };
+export type InitWatchOpts<EVT extends 'key' | 'prefix', K, PRF = unknown> = 
+  EVT extends 'key' ? { key: Etcd3PrefixedKey<K, PRF> } : { prefix: PRF };
 
 export type WatchEventData<EVT extends WatchEvent> = 
-  EVT extends 'data'
-  ? IWatchResponse
-  : IKeyValue;
+  EVT extends 'data' ? IWatchResponse : IKeyValue;
 
 export interface CreateLeaseOptions {
   ttl: number;
@@ -36,12 +30,14 @@ type __baseDataProcessOpts = {
   sort?: { on: SORT_FIELD, direction: SORT_DIR };
 };
 
-export type ETCDDataProcessingOpts<V, K extends string, PRF extends string = undefined, TYP extends 'iterate' | 'range' = 'iterate'> =
+export type ETCDDataProcessingOpts<V, K, PRF = unknown, TYP extends 'iterate' | 'range' = 'iterate'> =
   TYP extends 'iterate' 
-  ? { prefix: EtcdModel<V, K, PRF>['Prefix'] } & __baseDataProcessOpts
-  : { range: { start: EtcdModel<V, K>['KeyType'], end: EtcdModel<V, K>['KeyType'] } } & __baseDataProcessOpts;
+  ? (PRF extends string ? { prefix: EtcdModel<V, K, PRF>['Prefix'] } & __baseDataProcessOpts : never)
+  : TYP extends 'range'
+    ? { range: { start: EtcdModel<V, K>['KeyType'], end: EtcdModel<V, K>['KeyType'] } } & __baseDataProcessOpts
+    : never;
 
-export type GetAllResponse<V, K extends string, PRF extends string = undefined> = { [key in keyof Etcd3PrefixedKey<K, PRF>]: V };
+export type GetAllResponse<V, K extends string, PRF = unknown> = { [key in keyof Etcd3PrefixedKey<K, PRF>]: V };
 
 export const ELECTION_EVENTS: { [event in ElectionEvent]: event } = { elected: 'elected' };
 export const WATCH_EVENTS: { [event in WatchEvent]: event } = { data: 'data', delete: 'delete', put: 'put' };

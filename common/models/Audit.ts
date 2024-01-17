@@ -1,5 +1,5 @@
 import { EtcdModel } from '@core/models/EtcdModel';
-import { InferType, InferTypeDeep } from '@core/types/Infer';
+import { InferType } from '@core/types/Infer';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenAddress } from '@common/types/token/Token';
 
@@ -17,8 +17,8 @@ export type Action =
   | PostProcessorAction;
 
 export interface AuditAction<T, V>{
-  action: InferType<T, true>;
-  payload: InferTypeDeep<V>;
+  action: InferType<T>;
+  payload: InferType<V>;
 }
 
 export type AuditHoldings = { 

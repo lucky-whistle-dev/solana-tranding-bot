@@ -68,7 +68,7 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
         ema: updatedLongTermEMA,
         std: updatedLongTermStd,
         zscore: calculateZScore(latestClosing, updatedLongTermEMA, updatedLongTermStd)
-      },
+      }
     });
     
     return { action: 'calculateStats', payload: value };
