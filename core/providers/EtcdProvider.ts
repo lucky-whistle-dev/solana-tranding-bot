@@ -92,7 +92,7 @@ export class ETCDProvider extends EventEmitter {
     return this.startWatcher(watchOpts);
   }
 
-  async put<V, K, PRF = unknown>(opts: { key: EtcdModel<V, K, PRF>['KeyType'], value: EtcdModel<V, K, PRF>['ValueType'] }): Promise<boolean> {
+  async put<V, K = string, PRF = unknown>(opts: { key: EtcdModel<V, K, PRF>['KeyType'], value: EtcdModel<V, K, PRF>['ValueType'] }): Promise<boolean> {
     await this.client.put(opts.key).value(ValueSerializer.serialize(opts.value));
     return true;
   }

@@ -34,8 +34,8 @@ export type ETCDDataProcessingOpts<V, K, PRF = unknown, TYP extends 'iterate' | 
   TYP extends 'iterate' 
   ? (PRF extends string ? { prefix: EtcdModel<V, K, PRF>['Prefix'] } & __baseDataProcessOpts : never)
   : TYP extends 'range'
-    ? { range: { start: EtcdModel<V, K>['KeyType'], end: EtcdModel<V, K>['KeyType'] } } & __baseDataProcessOpts
-    : never;
+  ? { range: { start: EtcdModel<V, K>['KeyType'], end: EtcdModel<V, K>['KeyType'] } } & __baseDataProcessOpts
+  : never;
 
 export type GetAllResponse<V, K extends string, PRF = unknown> = { [key in keyof Etcd3PrefixedKey<K, PRF>]: V };
 

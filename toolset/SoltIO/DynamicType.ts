@@ -181,8 +181,10 @@ let test = {
   }
 }
 
-const hello = test
+type TestObj = { hello: string, world: string };
 
-const inferred: InferType<typeof hello, { action: 'OPTIONAL', keys: keyof typeof hello}> = {
-  
+/*
+const hi: InferType<TestObj & typeof test, 'OPTIONAL', 'hello'> = {
+  hl
 }
+*/

@@ -6,17 +6,19 @@ export type Etcd3PrefixedKey<K, PRF = unknown> =
   ? `${PRF}/${K extends string ? K : string}` 
   : K extends string ? K : string;
 
-export type EtcdModel<V, K, PRF = unknown> =
+export type EtcdModel<V, K, PRF = undefined | unknown> =
   PRF extends string
   ? {
     KeyType: Etcd3PrefixedKey<K, PRF>
     ValueType: InferType<V> 
     Prefix: PRF
   }
-  : {
-    KeyType: Etcd3PrefixedKey<K, PRF>
-    ValueType: InferType<V> 
-  }
+  : PRF extends undefined | unknown
+    ? {
+      KeyType: Etcd3PrefixedKey<K, PRF>
+      ValueType: InferType<V> 
+    }
+  : never;
 
 export class ValueSerializer {
   static serialize = <V, K, PRF = unknown>(value: EtcdModel<V, K, PRF>['ValueType']): Buffer => {

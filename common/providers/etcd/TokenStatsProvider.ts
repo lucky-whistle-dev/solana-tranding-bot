@@ -16,7 +16,7 @@ export class TokenStatsProvider {
   ) {}
 
   async insertTokenStatsEntry(
-    payload: InferType<TokenStatsModel['ValueType'], { action: 'OPTIONAL', keys: 'timestamp' }>
+    payload: InferType<TokenStatsModel['ValueType'], 'OPTIONAL', 'timestamp'>
   ): Promise<{ key: TokenStatsModel['KeyType'], value: TokenStatsModel['ValueType'] }> {
     const formattedDateFrom = ((): ISODateString => {
       if (payload.timestamp) return payload.timestamp;
@@ -24,7 +24,7 @@ export class TokenStatsProvider {
     })();
 
     const key: TokenStatsModel['KeyType'] = `tokenStats/${formattedDateFrom}`;
-    const formattedPayload: TokenStatsModel['ValueType'] = { timestamp: formattedDateFrom, ...payload }
+    const formattedPayload= { timestamp: formattedDateFrom, ...payload }
     await this.etcdProvider.put({ key, value: formattedPayload });
 
     return { key, value: formattedPayload };
@@ -52,7 +52,7 @@ export class TokenStatsProvider {
   }
 
   async range(opts: TokenStatsProcessingOpts<'range'>): Promise<TokenStatsModel['ValueType'][]> {
-    const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType']> = await this.etcdProvider.getAll({ 
+    const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
       range: opts.range, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, ...(opts?.limit ? { limit: opts.limit > 1 ? opts.limit : 1 } : null)
     });
 
@@ -67,11 +67,8 @@ type TokenStatsProcessingOpts<TYP = undefined> =
     TokenStatsModel['KeyType'], 
     TokenStatsModel['Prefix'], 
     (
-      TYP extends 'iterate' 
-      ? 'iterate' 
-      : TYP extends 'range' 
-      ? 'range' 
-      : TYP extends undefined 
-      ? 'iterate' 
+      TYP extends 'iterate' ? 'iterate' 
+      : TYP extends 'range' ? 'range' 
+      : TYP extends undefined ? 'iterate' 
       : never
     )>;
