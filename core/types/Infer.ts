@@ -22,42 +22,35 @@ type InferTypeAction = UpdateSubsetTypeAction | UpdatTypeAction;
   __enforcedFields
     Create dynamically enforced fields by extracting the target fields from T onto a separate strict object and then merging with original.
 */
-type __enforcedFields<T, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K>;
+type __enforcedFields<T, K = unknown> = 
+  K extends keyof T  ? __inferTypeStrict<Omit<T, K> & Required<Pick<T, K>>> : __inferTypeStrict<Required<T>>;
 
 /*
   __optionalFields
     Create dynamic partial fields by first removing the keys from the original object and then performing a partial pick on them.
 */
-type __optionalFields<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type __optionalFields<T, K = unknown> = 
+  K extends keyof T ? __inferTypeStrict<Omit<T, K> & Partial<Pick<T, K>>> : __inferTypeStrict<Partial<T>>;
 
+
+type __updateFields<MUT extends 'OMIT' | 'PICK', T, K extends keyof T> = 
+  MUT extends 'OMIT' ? __inferTypeStrict<Omit<T, keyof K>> : __inferTypeStrict<Pick<T, K>>;
 
 /*
   __inferType
     Determine the type of an object and the level of strictness on the object.
     Infer the type of generic T through R.
 */
-type __inferType<T, STRCT = false> = T extends infer R ? R : STRCT extends true ? never : T;
+type __inferTypeStrict<T> = T extends infer R ? R : never;
 
-/*
-  __isMappedType
-    Determine if an object is a mapped type or a value based on its structure
-*/
-type __isMappedType<T> = 
-  T extends { 
-    [K in keyof T]: T[K] extends infer U ? __inferTypeDeep<U> : T[K] 
-  } ? true : false;
+type __isMappedType<T> = T extends { [K in keyof T]: T[K] } ? true : false;
 
 /*
   __inferMappedType
     If the inference comes across a mapped object type, or structure, it will deeply project the keys and nested objects within.
 */
-type __inferMappedType<T, STRCT = false> = 
-  T extends infer R ? { 
-    [K in keyof R]: 
-      R[K] extends infer U 
-      ? __inferTypeDeep<U, STRCT>
-      : R[K]
-  } : T;
+type __inferMappedType<T> = 
+  T extends infer R ? { [K in keyof R]: R[K] extends infer U ? __inferTypeStrict<U> : R[K] } : never;
 
 /*
   __inferTypeDeep
@@ -65,26 +58,24 @@ type __inferMappedType<T, STRCT = false> =
     Apply any object structure changes here.
     Recursively infer the types of sub objects within the object.
 */
-type __inferTypeDeep<T, MUT = unknown, KEYS = unknown, STRCT = false> =
-  T extends infer P
-  ? __isMappedType<P> extends true
-    ? MUT extends UpdateSubsetTypeAction
-      ? KEYS extends keyof __inferMappedType<P>
-        ? MUT extends 'OPTIONAL' 
-        ? __optionalFields<__inferMappedType<P>, KEYS>
-        : MUT extends 'ENFORCE'
-        ? __enforcedFields<__inferMappedType<P>, KEYS>
-        : MUT extends 'OMIT' 
-        ? Omit<__inferMappedType<P>, KEYS>
-        : Pick<__inferMappedType<P>, KEYS>
-      : __inferMappedType<P>
-    : MUT extends UpdatTypeAction
-      ? MUT extends 'REQUIRE ALL' 
-      ? Required<__inferMappedType<P>>
-      : Partial<__inferMappedType<P>>
-    : __inferMappedType<P>
-  : __inferType<P, STRCT>
-  : __inferType<T, STRCT>;
+type __inferTypeDeep<T, MUT = unknown, KEYS = unknown> =
+  T extends infer R
+  ? __isMappedType<R> extends true
+    ? KEYS extends keyof __inferMappedType<R>
+      ? MUT extends 'OPTIONAL' ? __optionalFields<__inferMappedType<R>, KEYS>
+      : MUT extends 'OMIT' ? __updateFields<MUT, __inferMappedType<R>, KEYS>
+      : MUT extends 'ENFORCE' ? __enforcedFields<__inferMappedType<R>, KEYS>
+      : MUT extends 'PICK' ? __updateFields<MUT, __inferMappedType<R>, KEYS>
+      : never
+    : KEYS extends undefined | unknown
+      ? MUT extends 'REQUIRE ALL' ? __enforcedFields<__inferMappedType<R>>
+      : MUT extends 'PARTIAL' ? __optionalFields<__inferMappedType<R>>
+      : MUT extends unknown ? __inferMappedType<R>
+      : never
+    : __inferTypeStrict<R>
+  : __inferTypeStrict<T>
+  : never;
+
 
 /*
   InferType
@@ -92,9 +83,10 @@ type __inferTypeDeep<T, MUT = unknown, KEYS = unknown, STRCT = false> =
     It also allows for manipulation of the object directly in the type signature.
     No additional functions are required.
 */
-export type InferType<T, MUT extends InferTypeAction = undefined, KEYS extends keyof T = undefined, STRCT extends boolean = false> = 
-  MUT extends UpdatTypeAction 
-  ? __inferTypeDeep<T, MUT, unknown, STRCT>
-  : MUT extends UpdateSubsetTypeAction 
-  ? __inferTypeDeep<T, MUT, KEYS, STRCT>
-  : __inferTypeDeep<T, unknown, unknown, STRCT>;
+
+export type InferType<T, MUT extends InferTypeAction = undefined, KEYS extends keyof T = undefined> = 
+  MUT extends UpdatTypeAction ? __inferTypeDeep<T, MUT, unknown>
+  : MUT extends UpdateSubsetTypeAction ? __inferTypeDeep<T, MUT, KEYS>
+  : __inferTypeDeep<T, unknown, unknown>;
+
+

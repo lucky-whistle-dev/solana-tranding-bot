@@ -1,3 +1,4 @@
+import { InferType } from '@core/types/Infer';
 import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, Currency, Timeframe } from '@common/types/token/Token';
 import { BirdeyeResponse, BirdeyeTokenRequest } from '@common/types/external/Birdeye';
 
@@ -33,7 +34,7 @@ export interface TokenPriceObject<T extends TokenPriceRequestPayload | TokenPric
 export interface TokenOHLCRequest extends BirdeyeTokenRequest<'range'> {}
 
 type ResponseDataPayload = { 
-  items: Pick<TokenPriceResponsePayload, 'o' | 'h' | 'l' | 'c' | 'v' | 'address' | 'unixTime' | 'type'>[]
+  items: InferType<TokenPriceResponsePayload, 'ENFORCE', 'o' | 'h' | 'l' | 'c' | 'v' | 'address' | 'unixTime' | 'type'>[]
 };
 
 export interface TokenOHLCResponse extends BirdeyeResponse<ResponseDataPayload> {}

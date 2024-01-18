@@ -11,8 +11,8 @@ export type WatchEvent = 'data' | 'delete' | 'put';
 export type WatchListener<EVT extends WatchEvent> = 
   EVT extends 'data' ? (watchResp: IWatchResponse) => void : (keyVal: IKeyValue) => void;
 
-export type InitWatchOpts<EVT extends 'key' | 'prefix', K, PRF = unknown> = 
-  EVT extends 'key' ? { key: Etcd3PrefixedKey<K, PRF> } : { prefix: PRF };
+export type InitWatchOpts<EVT extends 'key' | 'prefix', K extends string, PRF = unknown> = 
+  EVT extends 'key' ? { key: Etcd3PrefixedKey<K, PRF> } : { prefix: PRF extends string ? PRF : never };
 
 export type WatchEventData<EVT extends WatchEvent> = 
   EVT extends 'data' ? IWatchResponse : IKeyValue;
@@ -30,7 +30,7 @@ type __baseDataProcessOpts = {
   sort?: { on: SORT_FIELD, direction: SORT_DIR };
 };
 
-export type ETCDDataProcessingOpts<V, K, PRF = unknown, TYP extends 'iterate' | 'range' = 'iterate'> =
+export type ETCDDataProcessingOpts<V, K extends string, PRF = unknown, TYP extends 'iterate' | 'range' = 'iterate'> =
   TYP extends 'iterate' 
   ? (PRF extends string ? { prefix: EtcdModel<V, K, PRF>['Prefix'] } & __baseDataProcessOpts : never)
   : TYP extends 'range'

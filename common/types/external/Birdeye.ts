@@ -1,3 +1,4 @@
+import { InferType } from '@core/types/Infer';
 import { SupportedChain, Timeframe, TokenAddress } from '@common/types/token/Token';
 
 
@@ -8,7 +9,7 @@ export type BirdeyeTokenRequest<T extends 'point' | 'range'> =
   : __baseRequest & { time_from: Date, time_to: Date };
 
 export interface BirdeyeResponse<T> {
-  data: T;
+  data: InferType<T>;
   success: boolean;
 }
 

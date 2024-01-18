@@ -9,12 +9,14 @@ export type StatsKeySuffix = ISODateString;
 export type ShortInterval = 1 | 7;
 export type LongInterval = 50 | 200;
 
-export type StatsForInterval<T> = {
+type __interval = ShortInterval | LongInterval;
+
+export type StatsForInterval<T extends __interval> = {
   interval: InferType<T>;
   ema: number;
   std: number;
   zscore: number;
-};
+}
 
 export interface StatsEntry {
   shortTerm: StatsForInterval<ShortInterval>;

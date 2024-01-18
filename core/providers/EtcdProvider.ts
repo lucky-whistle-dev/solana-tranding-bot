@@ -70,7 +70,7 @@ export class ETCDProvider extends EventEmitter {
     createObserver();
   }
 
-  async startWatcher<EVT extends 'key' | 'prefix', K, PRF extends string = undefined>(opts: InitWatchOpts<EVT, K, PRF>): Promise<Watcher> {
+  async startWatcher<EVT extends 'key' | 'prefix', K extends string, PRF = unknown>(opts: InitWatchOpts<EVT, K, PRF>): Promise<Watcher> {
     const watcher = await (async (): Promise<Watcher> => {
       if ('prefix' in opts) return this.client.watch().prefix(opts.prefix).create();
       return this.client.watch().key(opts.key).create();
@@ -87,22 +87,22 @@ export class ETCDProvider extends EventEmitter {
     return watcher;
   }
 
-  async startWatcherForLease<K extends string, PRF extends string = undefined>(watchOpts: InitWatchOpts<'key', K, PRF>, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
+  async startWatcherForLease<K extends string, PRF = unknown>(watchOpts: InitWatchOpts<'key', K, PRF>, leaseOpts: CreateLeaseOptions): Promise<Watcher> {
     await this.createLease(watchOpts.key, leaseOpts);
     return this.startWatcher(watchOpts);
   }
 
-  async put<V, K = string, PRF = unknown>(opts: { key: EtcdModel<V, K, PRF>['KeyType'], value: EtcdModel<V, K, PRF>['ValueType'] }): Promise<boolean> {
+  async put<V, K extends string, PRF = unknown>(opts: { key: EtcdModel<V, K, PRF>['KeyType'], value: EtcdModel<V, K, PRF>['ValueType'] }): Promise<boolean> {
     await this.client.put(opts.key).value(ValueSerializer.serialize(opts.value));
     return true;
   }
 
-  async get<V, K, PRF = unknown>(key: EtcdModel<V, K, PRF>['KeyType']): Promise<EtcdModel<V, K, PRF>['ValueType']> {
+  async get<V, K extends string, PRF = unknown>(key: EtcdModel<V, K, PRF>['KeyType']): Promise<EtcdModel<V, K, PRF>['ValueType']> {
     const buff = await this.client.get(key).buffer();
     return ValueSerializer.deserialize(buff);
   }
 
-  async delete<V, K, PRF = unknown>(key: EtcdModel<V, K, PRF>['KeyType']): Promise<boolean> {
+  async delete<V, K extends string, PRF = unknown>(key: EtcdModel<V, K, PRF>['KeyType']): Promise<boolean> {
     await this.client.delete().key(key);
     return true;
   }
@@ -134,7 +134,7 @@ export class ETCDProvider extends EventEmitter {
     );
   }
 
-  async createLease<V, K, PRF extends string>(existingKey: EtcdModel<V, K, PRF>['KeyType'], opts: CreateLeaseOptions): Promise<Lease> {
+  async createLease<V, K extends string, PRF = unknown>(existingKey: EtcdModel<V, K, PRF>['KeyType'], opts: CreateLeaseOptions): Promise<Lease> {
     const lease = this.client.lease(opts.ttl, opts.opts);
     await lease.put(existingKey).exec();
     return lease;

@@ -39,6 +39,7 @@ source ~/.zshrc
 
 Optionally, the following fields can also be added:
 ```bash
+export SELECTED_MODE=<'production' | 'simLive' | 'simHistorical' | 'offline'>
 export SELECTED_SIGNAL=<selected-model>
 export SELECTED_TIMEFRAME=<'1m' | '5m' | '10m' | '15m' | '1h' | '1d'>
 export SELECTED_SHORT_TERM_INTERVAL=<1 | 7>
@@ -48,6 +49,7 @@ export TOKEN_ADDRESS=<selected-token-address>
 
 If the optional fields are not provided, the constants will resolve to default values:
 ```ts
+const SELECTED_MODE: TraderMode = 'simHistorical'
 const SELECTED_SIGNAL_GENERATOR: SignalGenerator = 'hybridtrend'
 const SELECTED_TIMEFRAME: Timeframe = '5m';
 const SELECTED_SHORT_TERM_INTERVAL: ShortTermInterval = 7;

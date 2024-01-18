@@ -24,7 +24,7 @@ export class TokenStatsProvider {
     })();
 
     const key: TokenStatsModel['KeyType'] = `tokenStats/${formattedDateFrom}`;
-    const formattedPayload= { timestamp: formattedDateFrom, ...payload }
+    const formattedPayload: TokenStatsModel['ValueType'] = { timestamp: formattedDateFrom, ...payload }
     await this.etcdProvider.put({ key, value: formattedPayload });
 
     return { key, value: formattedPayload };
@@ -43,7 +43,7 @@ export class TokenStatsProvider {
     return latestEntry;
   }
 
-  async iterateFromLatest(opts: Pick<TokenStatsProcessingOpts, 'sort' | 'limit'>): Promise<TokenStatsModel['ValueType'][]> {
+  async iterateFromLatest(opts: InferType<TokenStatsProcessingOpts, 'OPTIONAL', 'sort' | 'limit'>): Promise<TokenStatsModel['ValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
       prefix: 'tokenStats', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });

@@ -21,7 +21,7 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
 
   protected async getApplicableStats(): Promise<StatsEntry> {
     const now = new Date();
-    const start: TokenStatsModel['KeyType']  = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
+    const start: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 2).toISOString() as ISODateString}`;
     const end: TokenStatsModel['KeyType'] = `tokenStats/${subDays(now, 1).toISOString() as ISODateString}`;
 
     const latestFromYDay = await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 });

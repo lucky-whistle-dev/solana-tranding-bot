@@ -2,6 +2,7 @@ import { Range } from 'node-schedule';
 import lodash from 'lodash';
 const { transform } = lodash;
 
+import { InferType } from '@core/types/Infer';
 import { InitTimeMap, NodeScheduleTimeMap, RecurrenceRule, ScheduleMap, ScheduledProcessors } from '@preprocessor/types/PreProcessor';
 
 
@@ -35,7 +36,7 @@ const generateRecurrenceRuleMapForProcessor = (initTimeMap: InitTimeMap): NodeSc
   }
 };
 
-const defaultInitTimeMap: { [rule in keyof Required<InitTimeMap>]: Required<RecurrenceRule<1>> } = {
+const defaultInitTimeMap: { [rule in keyof InferType<InitTimeMap, 'REQUIRE ALL'>]: InferType<RecurrenceRule<1>, 'ENFORCE', 'step'> } = {
   month: { start: 0, end: 11, step: 1 },
   dayOfMonth: { start: 1, end: 28, step: 1 },
   dayOfWeek: { start: 1, end: 7, step: 1 },

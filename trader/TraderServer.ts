@@ -9,6 +9,7 @@ import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
 import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
 import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
 import { RPC_ENDPOINT } from '@config/RPC';
+import { SimulationProvider } from '@trader/providers/SimulationProvider';
 
 
 export class TraderServer extends BaseServer {
@@ -31,7 +32,9 @@ export class TraderServer extends BaseServer {
     const tokenSwapProvider = new TokenSwapProvider(RPC_ENDPOINT);
 
     const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider)[envLoader.SELECTED_SIGNAL_GENERATOR];
-    const autoTrader: AutoTraderProvider = new AutoTraderProvider(signalGenerator, tokenPriceProvider, tokenSwapProvider);
+
+    const simProvider = new SimulationProvider(auditProvider, tokenPriceProvider, tokenStatsProvider, this.zLog)
+    const autoTrader: AutoTraderProvider = new AutoTraderProvider(signalGenerator, simProvider, tokenPriceProvider, this.zLog);
 
     try {
       etcdProvider.startElection(TraderServer.name);
