@@ -3,7 +3,7 @@ import lodash from 'lodash';
 const { transform } = lodash;
 
 import { InferType } from '@core/types/Infer';
-import { InitTimeMap, NodeScheduleTimeMap, RecurrenceRule, ScheduleMap, ScheduledProcessors } from '@preprocessor/types/PreProcessor';
+import { InitTimeMap, NodeScheduleTimeMap, RecurrenceRule, ScheduleMap, ScheduledProcessors } from '@common/types/PreProcessor';
 
 
 export const generateCycleMapForProcessors = (scheduleMap: ScheduleMap): { [task in ScheduledProcessors]: NodeScheduleTimeMap } => {

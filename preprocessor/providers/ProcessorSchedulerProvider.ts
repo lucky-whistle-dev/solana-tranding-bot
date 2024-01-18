@@ -2,7 +2,7 @@ import { scheduleJob } from 'node-schedule';
 
 import { LogProvider } from '@core/providers/LogProvider';
 import { generateCycleMapForProcessors } from '@preprocessor/utils/Schedule';
-import { ScheduledProcessors } from '@preprocessor/types/PreProcessor';
+import { ScheduledProcessors } from '@common/types/PreProcessor';
 import { scheduleMap } from '@preprocessor/configs/ScheduleMap';
 
 

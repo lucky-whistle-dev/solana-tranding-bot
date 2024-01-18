@@ -3,7 +3,7 @@ import { env } from 'process';
 import { SignalGenerator } from '@common/types/Signal';
 import { Timeframe } from '@common/types/token/Token';
 import { LongInterval, ShortInterval } from '@common/models/TokenStats';
-import { TraderMode } from '@trader/types/Trader';
+import { TraderMode } from '@common/types/Trader';
 
 
 type EnvironementKey = 

@@ -1,5 +1,5 @@
 import { CalculateStatsProcessor } from '@preprocessor/processors/CalculateStats.processor';
-import { ScheduleMap } from '@preprocessor/types/PreProcessor';
+import { ScheduleMap } from '@common/types/PreProcessor';
 
 
 export const scheduleMap: ScheduleMap = {

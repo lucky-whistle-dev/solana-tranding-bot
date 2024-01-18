@@ -11,7 +11,7 @@ import { Signal } from '@common/types/Signal';
 import { LogProvider } from '@core/providers/LogProvider';
 import { BaseSignalGeneratorProvider } from '@signals/BaseSignalGeneratorProvider';
 import { SignalGeneratorRegistry } from '@signals/SignalGeneratorRegistry';
-import { SimulationOpts, SimulationResults } from '@trader/types/Trader';
+import { SimulationOpts, SimulationResults } from '@common/types/Trader';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { convertISOToUnix } from '@core/utils/Utils';
