@@ -2,7 +2,7 @@ import { addDays, subDays, subMinutes } from 'date-fns';
 import lodash from 'lodash';
 const { first, last } = lodash;
 
-import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
+import { BaseProcessorProvider } from '@common/providers/BaseProcessorProvider';
 
 import { ISODateString } from '@core/types/ISODate';
 import { calculateEMA, calculateSMA, calculateStdEMA, calculateStdSMA, calculateZScore } from '@core/utils/Math';

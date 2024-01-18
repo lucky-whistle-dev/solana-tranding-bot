@@ -1,8 +1,8 @@
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { LogProvider } from '@core/providers/LogProvider';
+import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 import { AuditModel } from '@common/models/Audit';
 import { StatsEntry } from '@common/models/TokenStats';
-import { AuditProvider } from '@common/providers/etcd/AuditProvider';
 
 
 export abstract class BaseProcessorProvider {

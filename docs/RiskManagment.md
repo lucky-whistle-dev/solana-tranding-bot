@@ -97,6 +97,5 @@ on incoming audit from watcher:
 
   Determine the total realized profit for the swap between the account balance changes and the fee included with the transaction
 
-  The current profile balance is then updated a
-
+  The current profile balance is then updated an the success rate is updated
 ```

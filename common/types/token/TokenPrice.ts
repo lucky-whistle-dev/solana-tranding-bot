@@ -28,7 +28,7 @@ export interface TokenPriceResponsePayload {
 
 export interface TokenPriceObject<T extends TokenPriceRequestPayload | TokenPriceResponsePayload> {
   type: TokenPriceEvents;
-  data: T;
+  data: InferType<T>;
 }
 
 export interface TokenOHLCRequest extends BirdeyeTokenRequest<'range'> {}

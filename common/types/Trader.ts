@@ -5,7 +5,7 @@ export interface SimulationOpts {
   simulationType: 'live' | 'historical';
   simulationTimeInMs: number;
   audit: { persistOnCompletion: boolean; };
-  riskAversionGrade: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+  riskAversionGrade: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
   portfolioSize: number;
   overrideSignalGenerator?: SignalGenerator;
 }

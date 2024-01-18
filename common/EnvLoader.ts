@@ -32,14 +32,14 @@ type EnvValue<T extends EnvironementKey> =
 const SOL_TOKEN_ADDRESS = 'So11111111111111111111111111111111111111112';
 
 const envValueValidator = <T extends EnvironementKey>(envKey: T): EnvValue<T> => {
-  if (envKey === 'SELECTED_MODE') return (env[envKey as string] as TraderMode ?? 'simHistorical') as EnvValue<T>;
-  if (envKey === 'SELECTED_SIGNAL_GENERATOR') return (env[envKey as string] as SignalGenerator ?? 'hybridtrend') as EnvValue<T>;
-  if (envKey === 'SELECTED_TIMEFRAME') return (env[envKey as string] ?? '5m') as EnvValue<T>;
-  if (envKey === 'TOKEN_ADDRESS') return (env[envKey as string] ?? SOL_TOKEN_ADDRESS) as EnvValue<T>;
-  if (envKey === 'SELECTED_SHORT_TERM_INTERVAL') return (parseInt(env[envKey as string]) ?? 7) as EnvValue<T>;
-  if (envKey === 'SELECTED_LONG_TERM_INTERVAL') return (parseInt(env[envKey as string] ) ?? 50) as EnvValue<T>
+  if (envKey === 'SELECTED_MODE') return (env[envKey] ?? 'simHistorical') as EnvValue<T>;
+  if (envKey === 'SELECTED_SIGNAL_GENERATOR') return (env[envKey] ?? 'hybridtrend') as EnvValue<T>;
+  if (envKey === 'SELECTED_TIMEFRAME') return (env[envKey] ?? '5m') as EnvValue<T>;
+  if (envKey === 'TOKEN_ADDRESS') return (env[envKey] ?? SOL_TOKEN_ADDRESS) as EnvValue<T>;
+  if (envKey === 'SELECTED_SHORT_TERM_INTERVAL') return (parseInt(env[envKey]) ?? 7) as EnvValue<T>;
+  if (envKey === 'SELECTED_LONG_TERM_INTERVAL') return (parseInt(env[envKey] ) ?? 50) as EnvValue<T>
 
-  return env[envKey as string] as EnvValue<T>;
+  return env[envKey] as EnvValue<T>
 }
 
 export const envLoader: { [envKey in EnvironementKey]: EnvValue<envKey> } = {

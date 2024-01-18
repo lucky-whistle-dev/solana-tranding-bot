@@ -1,6 +1,6 @@
 import { Range } from 'node-schedule';
 
-import { BaseProcessorProvider } from '@preprocessor/providers/BaseProcessorProvider';
+import { BaseProcessorProvider } from '@common/providers/BaseProcessorProvider';
 
 
 export type ScheduledProcessors = 'calculateStats';

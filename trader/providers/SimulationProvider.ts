@@ -79,6 +79,5 @@ export class SimulationProvider {
   async simulateLiveTrades(signal: Signal, stats: StatsEntry) {
     const generatorType = this.opts?.overrideSignalGenerator ? this.opts.overrideSignalGenerator : envLoader[envLoader.SELECTED_SIGNAL_GENERATOR];
     this.signalGenerator = SignalGeneratorRegistry.generators(this.auditProvider, this.tokenStatsProvider)[generatorType];
-
   }
 }

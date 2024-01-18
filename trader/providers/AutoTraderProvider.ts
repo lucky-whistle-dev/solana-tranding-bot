@@ -19,7 +19,7 @@ export class AutoTraderProvider {
   ) {}
 
   async start(request: TokenPriceObject<TokenPriceRequestPayload>) {
-    const mode = envLoader.SELECTED_MODE;
+    const mode = envLoader.SELECTED_MODE
     if (mode === 'offline') { 
       this.zLog.debug('trader service has been set to offline, exitting...')
       process.exit(1);
@@ -38,11 +38,20 @@ export class AutoTraderProvider {
       });
 
       this.zLog.debug(`simulation results for historical data: ${JSON.stringify(simResults, null, 2)}`);
-      
+    
       process.exit(0);
     }
 
-    if (mode === 'simLive') await this.simProvider
+    if (mode === 'simLive') { 
+      await this.simProvider.setup({ 
+        simulationType: 'live', 
+        simulationTimeInMs: 0,
+        audit: { persistOnCompletion: true },
+        riskAversionGrade: 5,
+        portfolioSize: 10000
+      });
+    }
+
     this.tokenPriceProvider.startPriceListener('price_data', request);
     this.tokenPriceProvider.onPriceData('price_data', async priceData => {
       if (priceData.type !== 'WELCOME') {
