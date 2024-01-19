@@ -7,6 +7,8 @@ import { InferType } from '@core/types/Infer';
 import { ETCDDataProcessingOpts, GetAllResponse } from '@core/types/Etcd';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenStatsModel } from '@common/models/TokenStats';
+import { TokenSymbol } from '@common/types/token/Token';
+import { Timeframe } from '@core/utils/Math';
 
 
 export class TokenStatsProvider {
@@ -15,17 +17,16 @@ export class TokenStatsProvider {
     private zLog: LogProvider = new LogProvider(TokenStatsProvider.name)
   ) {}
 
-  async insertTokenStatsEntry(
-    payload: InferType<TokenStatsModel['ValueType'], 'OPTIONAL', 'timestamp'>
+  async insertTokenStatsEntry(payload: InferType<TokenStatsModel['ValueType'], 'OPTIONAL', 'timestamp'>
   ): Promise<{ key: TokenStatsModel['KeyType'], value: TokenStatsModel['ValueType'] }> {
     const formattedDateFrom = ((): ISODateString => {
       if (payload.timestamp) return payload.timestamp;
       return new Date().toISOString() as ISODateString;
     })();
 
-    const key: TokenStatsModel['KeyType'] = `tokenStats/${formattedDateFrom}`;
+    const key: TokenStatsModel['KeyType'] = `tokenStats/${payload.tokenSymbol}/${payload.timeframe}/${formattedDateFrom}`;
     const formattedPayload: TokenStatsModel['ValueType'] = { timestamp: formattedDateFrom, ...payload }
-    await this.etcdProvider.put({ key, value: formattedPayload });
+    await this.etcdProvider.put<TokenStatsModel['ValueType'], TokenStatsModel['KeyType']>({ key, value: formattedPayload });
 
     return { key, value: formattedPayload };
   }
@@ -34,9 +35,9 @@ export class TokenStatsProvider {
     return this.etcdProvider.get<TokenStatsModel['ValueType'], TokenStatsModel['KeyType']>(key);
   }
 
-  async getLates(): Promise<TokenStatsModel['ValueType']> {
+  async getLatest(opts: { token: TokenSymbol, timeframe: Timeframe }): Promise<TokenStatsModel['ValueType']> {
     const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'tokenStats', sort: { on: 'Key', direction: 'Descend' }, limit: 1 
+      prefix: `tokenStats/${opts.token}/${opts.timeframe}`, sort: { on: 'Key', direction: 'Descend' }, limit: 1 
     });
 
     const latestEntry: TokenStatsModel['ValueType'] = getAllResp[first(Object.keys(getAllResp))];
@@ -45,7 +46,7 @@ export class TokenStatsProvider {
 
   async iterateFromLatest(opts: InferType<TokenStatsProcessingOpts, 'OPTIONAL', 'sort' | 'limit'>): Promise<TokenStatsModel['ValueType'][]> {
     const getAllResp: GetAllResponse<TokenStatsModel['ValueType'], TokenStatsModel['KeyType'], TokenStatsModel['Prefix']> = await this.etcdProvider.getAll({ 
-      prefix: 'tokenStats', sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
+      prefix: opts.prefix, sort: opts?.sort ? opts.sort : { on: 'Key', direction: 'Descend' }, limit: opts.limit > 1 ? opts.limit : 1
     });
 
     return transform(Object.keys(getAllResp), (acc, curr) => acc.push(getAllResp[curr]), []);
@@ -61,8 +62,7 @@ export class TokenStatsProvider {
 }
 
 
-type TokenStatsProcessingOpts<TYP = undefined> = 
-  ETCDDataProcessingOpts<
+type TokenStatsProcessingOpts<TYP = undefined> = ETCDDataProcessingOpts<
     TokenStatsModel['ValueType'], 
     TokenStatsModel['KeyType'], 
     TokenStatsModel['Prefix'], 

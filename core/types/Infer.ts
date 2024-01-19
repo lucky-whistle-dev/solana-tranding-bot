@@ -88,5 +88,3 @@ export type InferType<T, MUT extends InferTypeAction = undefined, KEYS extends k
   MUT extends UpdatTypeAction ? __inferTypeDeep<T, MUT, unknown>
   : MUT extends UpdateSubsetTypeAction ? __inferTypeDeep<T, MUT, KEYS>
   : __inferTypeDeep<T, unknown, unknown>;
-
-

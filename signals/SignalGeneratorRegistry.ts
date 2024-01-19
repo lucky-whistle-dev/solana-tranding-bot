@@ -5,6 +5,7 @@ import { BaseSignalGeneratorProvider } from '@signals/BaseSignalGeneratorProvide
 
 import { HybridTrendSignalProvider } from '@signals/generators/HybridTrendSignalGenerator';
 
+
 type SignalGeneratorMap = { [model in SignalGenerator]: BaseSignalGeneratorProvider };
 
 export class SignalGeneratorRegistry {

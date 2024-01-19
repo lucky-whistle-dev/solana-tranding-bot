@@ -1,5 +1,6 @@
 import { InferType } from '@core/types/Infer';
-import { SupportedChain, Timeframe, TokenAddress } from '@common/types/token/Token';
+import { Timeframe } from '@core/utils/Math';
+import { SupportedChain, TokenAddress } from '@common/types/token/Token';
 
 
 type __baseRequest = { address: TokenAddress, type: Timeframe };

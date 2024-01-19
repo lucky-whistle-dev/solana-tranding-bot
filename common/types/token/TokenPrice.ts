@@ -1,5 +1,6 @@
 import { InferType } from '@core/types/Infer';
-import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, Currency, Timeframe } from '@common/types/token/Token';
+import { Timeframe } from '@core/utils/Math';
+import { TokenAddress, TokenSymbol, TokenPricePayloadEventType, Currency } from '@common/types/token/Token';
 import { BirdeyeResponse, BirdeyeTokenRequest } from '@common/types/external/Birdeye';
 
 

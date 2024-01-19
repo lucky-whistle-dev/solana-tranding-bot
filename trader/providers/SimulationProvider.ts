@@ -1,7 +1,8 @@
-import { sub, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 import lodash from 'lodash';
-const { chunk, zip} = lodash;
+const { zip } = lodash;
 
+import { InferType } from '@core/types/Infer';
 import { envLoader } from '@common/EnvLoader';
 import { StatsEntry, TokenStatsModel } from '@common/models/TokenStats';
 import { AuditProvider } from '@common/providers/etcd/AuditProvider';
@@ -15,7 +16,6 @@ import { SimulationOpts, SimulationResults } from '@common/types/Trader';
 import { ISODateString } from '@core/types/ISODate';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { convertISOToUnix } from '@core/utils/Utils';
-import { InferType } from '@core/types/Infer';
 
 
 export class SimulationProvider {
@@ -26,7 +26,8 @@ export class SimulationProvider {
     private auditProvider: AuditProvider,
     private tokenPriceProvider: TokenPriceProvider,
     private tokenStatsProvider: TokenStatsProvider,
-    private zLog = new LogProvider(SimulationProvider.name)
+    private tokenOpts = { token: envLoader.TOKEN_SYMBOL, timeframe: envLoader.SELECTED_TIMEFRAME },
+    private zLog = new LogProvider(SimulationProvider.name),
   ) {}
 
   async setup(opts: SimulationOpts) {
@@ -38,13 +39,13 @@ export class SimulationProvider {
 
   async simulateHistoricalTrades(opts: SimulationOpts): Promise<InferType<SimulationResults, 'REQUIRE ALL'>> {
     const start = new Date();
-    const startKey: TokenStatsModel['KeyType'] = `tokenStats/${subDays(start, 32).toISOString() as ISODateString}`;
-    const endKey: TokenStatsModel['KeyType'] = `tokenStats/${subDays(start, 1).toISOString() as ISODateString}`;
+    const startKey: TokenStatsModel['KeyType'] = `tokenStats/${this.tokenOpts.token}/${this.tokenOpts.timeframe}/${subDays(start, 32).toISOString() as ISODateString}`;
+    const endKey: TokenStatsModel['KeyType'] = `tokenStats/${this.tokenOpts.token}/${this.tokenOpts.timeframe}/${subDays(start, 1).toISOString() as ISODateString}`;
     
     const historicalStats = await this.tokenStatsProvider.range({ range: { start: startKey, end: endKey } });
     const historicalPrices = await this.tokenPriceProvider.getOHLC({ 
       address: envLoader.TOKEN_ADDRESS,
-      type: '5m',
+      type: this.tokenOpts.timeframe,
       time_from: subDays(start, 31),
       time_to: subDays(start, 1)
     });
@@ -76,7 +77,7 @@ export class SimulationProvider {
     };
   }
 
-  async simulateLiveTrades(signal: Signal, stats: StatsEntry) {
+  async simulateLiveTrades(signal: Signal, stats: TokenStatsModel['ValueType']) {
     const generatorType = this.opts?.overrideSignalGenerator ? this.opts.overrideSignalGenerator : envLoader[envLoader.SELECTED_SIGNAL_GENERATOR];
     this.signalGenerator = SignalGeneratorRegistry.generators(this.auditProvider, this.tokenStatsProvider)[generatorType];
   }

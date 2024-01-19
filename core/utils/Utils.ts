@@ -57,4 +57,8 @@ export const generatePostRequest = (opts: any) => {
 
 export const convertISOToUnix = (isoString: ISODateString): number => {
   return Math.floor(new Date(isoString).getTime() / 1000);
-}
+};
+
+export const convertUnixToISO = (unixTime: number): ISODateString => {
+  return new Date(unixTime * 1000).toISOString() as ISODateString;
+};

@@ -1,7 +1,6 @@
 import { EtcdModel } from '@core/models/EtcdModel';
 import { InferType } from '@core/types/Infer';
 import { ISODateString } from '@core/types/ISODate';
-import { TokenAddress } from '@common/types/token/Token';
 
 
 export type AuditKeyPrefix = 'audit';
@@ -22,32 +21,9 @@ export interface AuditAction<T extends Action, V>{
   payload: InferType<V>;
 }
 
-export type AuditHoldings = { 
-  [token: TokenAddress]: {
-    amount: number;
-    updatedAt: ISODateString;
-    totalCostOverTime: number;
-    recognizedProfit: number;
-    averagePriceBought: number;
-    successfulTrades: number;
-    totalTrades: number;
-  }
-};
-
-export interface AuditPerformance {
-  successRate: number;
-  totalTrades: number;
-  targetProfitPerDay: number;
-  maxLoss: number;
-  recognizedProfit: number;
-  totalCost: number;
-}
-
 export interface AuditEntry<V> {
   action: AuditAction<Action, V>;
   auditEntrySource: string;
-  holdings: AuditHoldings;
-  performance: AuditPerformance;
   timestamp: ISODateString;
 }
 

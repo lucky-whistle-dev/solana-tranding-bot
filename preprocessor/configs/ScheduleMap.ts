@@ -13,7 +13,7 @@ export const scheduleMap: ScheduleMap = {
       minutes: { 
         start: 0,
         end: 59,
-        step: 2
+        step: 1
       },
       seconds: 0
     },

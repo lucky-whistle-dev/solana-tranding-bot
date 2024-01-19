@@ -1,13 +1,9 @@
-import { getMilliseconds } from 'date-fns';
-
 import { LogProvider } from '@core/providers/LogProvider';
 import { envLoader } from '@common/EnvLoader';
 import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
-import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
 import { TokenPriceObject, TokenPriceRequestPayload } from '@common/types/token/TokenPrice';
 import { BaseSignalGeneratorProvider } from '@signals/BaseSignalGeneratorProvider';
 import { SimulationProvider } from '@trader/providers/SimulationProvider';
-import { SignalGeneratorRegistry } from '@signals/SignalGeneratorRegistry';
 
 
 export class AutoTraderProvider {

@@ -8,8 +8,8 @@ import { TokenPriceProvider } from '@common/providers/token/TokenPriceProvider';
 import { TokenSwapProvider } from '@common/providers/token/TokenSwapProvider';
 import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
 import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
-import { RPC_ENDPOINT } from '@config/RPC';
 import { SimulationProvider } from '@trader/providers/SimulationProvider';
+import { RPC_ENDPOINT } from '@config/RPC';
 
 
 export class TraderServer extends BaseServer {
@@ -33,7 +33,7 @@ export class TraderServer extends BaseServer {
 
     const signalGenerator = SignalGeneratorRegistry.generators(auditProvider, tokenStatsProvider)[envLoader.SELECTED_SIGNAL_GENERATOR];
 
-    const simProvider = new SimulationProvider(auditProvider, tokenPriceProvider, tokenStatsProvider, this.zLog)
+    const simProvider = new SimulationProvider(auditProvider, tokenPriceProvider, tokenStatsProvider)
     const autoTrader: AutoTraderProvider = new AutoTraderProvider(signalGenerator, simProvider, tokenPriceProvider, this.zLog);
 
     try {
@@ -45,7 +45,7 @@ export class TraderServer extends BaseServer {
               type: 'SUBSCRIBE_PRICE',
               data: {
                 queryType: 'simple',
-                chartType: '5m',
+                chartType: envLoader.SELECTED_TIMEFRAME,
                 address: envLoader.TOKEN_ADDRESS,
                 currency: 'usd'
               }
