@@ -1,6 +1,6 @@
 import { subMinutes } from 'date-fns';
 import lodash from 'lodash';
-const { first, last } = lodash;
+const { last } = lodash;
 
 import { BaseSignalGeneratorProvider } from '@signals/BaseSignalGeneratorProvider';
 
@@ -28,10 +28,8 @@ export class HybridTrendSignalProvider extends BaseSignalGeneratorProvider {
     const now = new Date();
     const prevFrame = timeFramesPerUnit[this.opts.timeframe].min;
     this.zLog.debug(`fetching stats from ${timeFramesPerUnit[this.opts.timeframe].min} minutes ago`);
-
     const stats = await this.tokenStatsProvider.range({ range: { start: formatKey(subMinutes(now, prevFrame)), end: formatKey(now) }});
     
-    this.zLog.debug(`stats: last ${JSON.stringify(last(stats), null, 2)} -- first ${JSON.stringify(first(stats), null, 2)}`);
     return last(stats);
   }
 

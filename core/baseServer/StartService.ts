@@ -1,12 +1,9 @@
-import { InitBaseServer } from '@core/baseServer/core/InitBaseServer';
+import { InitBaseServer } from '@core/baseServer/InitBaseServer';
 import { serverConfiguration } from '@core/baseServer/ServerConfiguration';
 
 
-const server = new InitBaseServer(
-  serverConfiguration.baseServer.name,
-  serverConfiguration.baseServer.port,
-  serverConfiguration.baseServer.version,
-  serverConfiguration.baseServer.numOfCpus,
-);
+const server = new InitBaseServer(serverConfiguration.baseServer);
 
-server.startServer();
+try {
+  server.startServer();
+} catch (err) { console.log(err); }

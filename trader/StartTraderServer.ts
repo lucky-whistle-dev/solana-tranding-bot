@@ -4,10 +4,7 @@ import { TraderServer } from '@trader/TraderServer';
 
 const server = new TraderServer(
   serverConfiguration.basePath,
-  serverConfiguration.systems.trader.name,
-  serverConfiguration.systems.trader.port,
-  serverConfiguration.systems.trader.version,
-  serverConfiguration.systems.trader.numOfCpus
+  serverConfiguration.systems.trader
 );
 
 try {

@@ -1,4 +1,4 @@
-import { ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
+import { ServerConfiguration } from '@core/baseServer/types/ServerConfiguration';
 
 
 type ApplicableServers = 'baseServer';

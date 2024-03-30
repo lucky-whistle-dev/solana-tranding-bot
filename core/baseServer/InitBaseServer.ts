@@ -1,4 +1,4 @@
-import { BaseServer } from '@core/baseServer/core/BaseServer';
+import { BaseServer } from '@core/baseServer/BaseServer';
 
 
 /*
@@ -9,7 +9,7 @@ import { BaseServer } from '@core/baseServer/core/BaseServer';
 
   Up to you
 */
-export class InitBaseServer extends BaseServer {
+export class InitBaseServer extends BaseServer<string> {
   initService = async (): Promise<boolean> => true;
   startEventListeners = async (): Promise<void> => null;
 }

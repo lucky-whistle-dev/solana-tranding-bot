@@ -8,7 +8,7 @@ export type PerformanceKeySuffix = 'summary';
 type __confidenceLevels = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export type PerformanceProfile = {
-  v: number
+  v: number;
   aggregatedSuccessRate: number;
   performanceTrend: number;
   confidence: __confidenceLevels;

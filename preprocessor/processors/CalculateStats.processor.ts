@@ -36,9 +36,9 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
 
     const { ema, std, tokenAddress, timeframe, timestamp } = prevStatsEntry;
 
-    const ohlcResp = await this.tokenPriceProvider.getOHLC({
+    const ohlcResp = await this.tokenPriceProvider.getOHLC({ 
       address: tokenAddress,
-      type: timeframe, 
+      type: timeframe,
       time_from: new Date(timestamp),
       time_to: new Date()
     });
@@ -102,10 +102,10 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
     const start: TokenStatsModel['KeyType'] = `tokenStats/${this.opts.token}/${this.opts.timeframe}/${startDateString}`;
     const end: TokenStatsModel['KeyType'] = `tokenStats/${this.opts.token}/${this.opts.timeframe}/${endDateString}`;
 
-    this.zLog.debug(`start - end for seed data: ${start} - ${end}`);
-
     const prevStatsEntry = first(await this.tokenStatsProvider.range({ range: { start, end }, limit: 1 }));
     if (prevStatsEntry) return null;
+
+    this.zLog.debug(`start - end for seed data: ${start} - ${end}`);
 
     const ohlcData = await this.tokenPriceProvider.getOHLC({ 
       address: envLoader.TOKEN_ADDRESS,
@@ -138,20 +138,16 @@ export class CalculateStatsProcessor extends BaseProcessorProvider {
 
         return {
           shortTermMean: calculateEMA(
-            entry.c, ema.short.val, 
-            { timeframe: this.opts.timeframe, periods: ema.short.interval, interval: 'day' }
+            entry.c, ema.short.val, { timeframe: this.opts.timeframe, periods: ema.short.interval, interval: 'day' }
           ),
           shortTermStd: calculateStdEMA(
-            entry.c, ema.short.val, std.short.val,
-            { timeframe: this.opts.timeframe, periods: std.short.interval, interval: 'day' }
+            entry.c, ema.short.val, std.short.val, { timeframe: this.opts.timeframe, periods: std.short.interval, interval: 'day' }
           ),
           longTermMean: calculateEMA(
-            entry.c, ema.long.val,
-            { timeframe: this.opts.timeframe, periods: ema.long.interval, interval: 'day' }
+            entry.c, ema.long.val, { timeframe: this.opts.timeframe, periods: ema.long.interval, interval: 'day' }
           ),
           longTermStd: calculateStdEMA(
-            entry.c, ema.long.val, std.long.val,
-            { timeframe: this.opts.timeframe, periods: std.long.interval, interval: 'day' }
+            entry.c, ema.long.val, std.long.val, { timeframe: this.opts.timeframe, periods: std.long.interval, interval: 'day' }
           ),
         }
       })();

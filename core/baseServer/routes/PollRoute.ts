@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { LogProvider } from '@core/providers/LogProvider';
-import { BaseRoute } from '@core/baseServer/core/BaseRoute';
+import { BaseRoute } from '@core/baseServer/BaseRoute';
 
 import { routeMappings } from '@core/baseServer/configs/RouteMappings';
 
@@ -10,15 +10,8 @@ import { routeMappings } from '@core/baseServer/configs/RouteMappings';
   |
   ---> return response if alive
 */
-
-
-const NAME = 'Poll Route'
-
 export class PollRoute extends BaseRoute {
-  name = NAME;
-  
-  private log: LogProvider = new LogProvider(NAME);
-  
+  private log: LogProvider = new LogProvider(PollRoute.name);
   constructor(rootpath: string) {
     super(rootpath);
     this.router.get(routeMappings.poll.subRouteMappings.root.name, this.poll.bind(this));

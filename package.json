@@ -59,7 +59,6 @@
     "@preprocessor": "./dist/preprocessor",
     "@postprocessor": "./dist/postprocessor",
     "@signals": "./dist/signals",
-    "@toolset": "./dist/toolset",
-    "@baseServer": "./dist/core/baseServer"
+    "@toolset": "./dist/toolset"
   }
 }

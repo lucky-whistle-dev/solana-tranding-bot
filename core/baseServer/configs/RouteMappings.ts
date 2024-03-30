@@ -1,5 +1,5 @@
 import { ROUTE, STATUSOK, INFO } from '@core/types/Log';
-import { BaseRoute } from '@core/baseServer/core/types/RouteMappings';
+import { BaseRoute } from '@core/baseServer/types/RouteMappings';
 
 
 /*

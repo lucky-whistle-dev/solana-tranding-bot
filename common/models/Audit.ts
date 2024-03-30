@@ -3,8 +3,8 @@ import { InferType } from '@core/types/Infer';
 import { ISODateString } from '@core/types/ISODate';
 
 
-export type AuditKeyPrefix = 'audit';
-export type AuditKeySuffix<T extends Action> = `${T}/${ISODateString}`
+export type AuditKeyPrefix<T extends Action> = `audit/${T}`;
+export type AuditKeySuffix = ISODateString;
 
 export type PreProcessorAction = 'calculateStats';
 export type TraderAction = 'live' | 'livesim' | 'historicalsim';
@@ -27,4 +27,4 @@ export interface AuditEntry<V> {
   timestamp: ISODateString;
 }
 
-export type AuditModel<V> = EtcdModel<AuditEntry<V>, AuditKeySuffix<Action>, AuditKeyPrefix>;
+export type AuditModel<V> = EtcdModel<AuditEntry<V>, AuditKeySuffix, AuditKeyPrefix<Action>>;

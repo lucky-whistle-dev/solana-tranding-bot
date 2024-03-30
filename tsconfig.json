@@ -29,8 +29,7 @@
       "@preprocessor/*": ["preprocessor/*"],
       "@postprocessor/*": ["postprocessor/*"],
       "@signals/*": ["signals/*"],
-      "@toolset/*": ["toolset/*"],
-      "@baseServer/*": ["core/baseServer/*"]
+      "@toolset/*": ["toolset/*"]
     }
   }
 }

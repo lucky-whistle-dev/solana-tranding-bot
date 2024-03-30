@@ -4,10 +4,7 @@ import { PostProcessorServer } from '@postprocessor/PostProcessorServer';
 
 const server = new PostProcessorServer(
   serverConfiguration.basePath,
-  serverConfiguration.systems.postprocessor.name,
-  serverConfiguration.systems.postprocessor.port,
-  serverConfiguration.systems.postprocessor.version,
-  serverConfiguration.systems.postprocessor.numOfCpus
+  serverConfiguration.systems.postprocessor
 );
 
 try {

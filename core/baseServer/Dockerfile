@@ -1,14 +1,7 @@
-FROM node:18
+FROM buildapi
 
-RUN apt-get update
-RUN apt-get install -y curl
+COPY core ./core
 
-WORKDIR /usr/src/baseserver
-
-COPY ./core ./core
-COPY package.json gruntfile.js tsconfig.json ./
-
-RUN npm install
 RUN npm run build:all
 
 EXPOSE 7890

@@ -1,12 +1,7 @@
-import cluster from 'cluster';
-import path from 'path';
-import * as url from 'url';
-
 import express from 'express';
-
+import cluster from 'cluster';
 import { config } from 'dotenv';
 import * as os from 'os';
-
 import createError from 'http-errors';
 import * as e from 'express';
 import cookieParser from 'cookie-parser';
@@ -17,10 +12,10 @@ import { LogProvider } from '@core/providers/LogProvider';
 import { PollRoute } from '@core/baseServer/routes/PollRoute';
 import { routeMappings } from '@core/baseServer/configs/RouteMappings';
 import { extractErrorMessage } from '@core/utils/Utils';
+import { ServerConfiguration } from '@core/baseServer/types/ServerConfiguration';
 
 
 config({ path: '.env' });
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 
 /*
@@ -34,20 +29,27 @@ Base Server
       --> start service
       --> listen on default port
 */
-export abstract class BaseServer {
+export abstract class BaseServer<T extends string> {
   name: string;
 
-  private app: e.Application;
-  private ip: string;
-  private numOfCpus: number = os.cpus().length;
-  private routes: any[] = [ new PollRoute(routeMappings.poll.name) ];
+  protected app: e.Application;
+  protected ip: string;
+  protected port: number;
+  protected version: string;
+  protected staticFilesDir: string = 'public';
+
+  protected numOfCpus: number = os.cpus().length;
+  protected routes: any[] = [ new PollRoute(routeMappings.poll.name) ];
   protected zLog: LogProvider;
 
-  constructor(name: string, private port: number = 8000, private version: string = '0.1', numOfCpus?: number) {
-    this.name = name;
+  constructor(opts: ServerConfiguration<T>) {
+    this.name = opts.name;
     this.zLog = new LogProvider(this.name);
-    //  default values
-    if (numOfCpus) this.numOfCpus = numOfCpus;
+
+    this.port = opts.port;
+    this.version = opts.version;
+    this.numOfCpus = opts.numOfCpus;
+    if (opts?.staticFilesDir) this.staticFilesDir = opts.staticFilesDir;
   }
 
   getIp = () => this.ip;
@@ -110,7 +112,7 @@ export abstract class BaseServer {
       this.app.use(e.json());
       this.app.use(e.urlencoded({ extended: false }));
       this.app.use(cookieParser());
-      this.app.use(e.static(path.join(__dirname, 'public')));
+      this.app.use(e.static(this.staticFilesDir));
       this.app.use(compression());
       this.app.use(helmet());
     } catch (err) { throw Error(`error initializing middleware => ${extractErrorMessage(err as Error)}`); }

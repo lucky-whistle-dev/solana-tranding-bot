@@ -1,4 +1,5 @@
-import { BaseServer } from '@baseServer/core/BaseServer';
+import { ApplicableSystems } from '../ServerConfigurations';
+import { BaseServer } from '@core/baseServer/BaseServer';
 
 import { ETCDProvider } from '@core/providers/EtcdProvider';
 import { envLoader } from '@common/EnvLoader';
@@ -10,11 +11,12 @@ import { SignalGeneratorRegistry  } from '@signals/SignalGeneratorRegistry';
 import { AutoTraderProvider } from '@trader/providers/AutoTraderProvider';
 import { SimulationProvider } from '@trader/providers/SimulationProvider';
 import { RPC_ENDPOINT } from '@config/RPC';
+import { ServerConfiguration } from '@core/baseServer/types/ServerConfiguration';
 
 
-export class TraderServer extends BaseServer {
-  constructor(private basePath: string, name: string, port?: number, version?: string, numOfCpus?: number) { 
-    super(name, port, version, numOfCpus); 
+export class TraderServer extends BaseServer<ApplicableSystems> {
+  constructor(private basePath: string, opts: ServerConfiguration<ApplicableSystems>) { 
+    super(opts); 
   }
 
   async initService(): Promise<boolean> {

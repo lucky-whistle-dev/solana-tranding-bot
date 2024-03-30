@@ -32,13 +32,12 @@ type __enforcedFields<T, K = unknown> =
 type __optionalFields<T, K = unknown> = 
   K extends keyof T ? __inferTypeStrict<Omit<T, K> & Partial<Pick<T, K>>> : __inferTypeStrict<Partial<T>>;
 
-
 type __updateFields<MUT extends 'OMIT' | 'PICK', T, K extends keyof T> = 
   MUT extends 'OMIT' ? __inferTypeStrict<Omit<T, keyof K>> : __inferTypeStrict<Pick<T, K>>;
 
 /*
   __inferType
-    Determine the type of an object and the level of strictness on the object.
+    Determine the\ type of an object and the level of strictness on the object.
     Infer the type of generic T through R.
 */
 type __inferTypeStrict<T> = T extends infer R ? R : never;
@@ -76,14 +75,12 @@ type __inferTypeDeep<T, MUT = unknown, KEYS = unknown> =
   : __inferTypeStrict<T>
   : never;
 
-
 /*
   InferType
     Used to strictly type generic params and create types from objects.
     It also allows for manipulation of the object directly in the type signature.
     No additional functions are required.
 */
-
 export type InferType<T, MUT extends InferTypeAction = undefined, KEYS extends keyof T = undefined> = 
   MUT extends UpdatTypeAction ? __inferTypeDeep<T, MUT, unknown>
   : MUT extends UpdateSubsetTypeAction ? __inferTypeDeep<T, MUT, KEYS>

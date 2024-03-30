@@ -17,3 +17,4 @@ type Separator = 'T';
 type Timezone = string;
 
 export type ISODateString<MS extends MillisecondsFormat = undefined> = `${YearsThroughDays}${Separator}${HoursThroughSeconds<MS>}${Timezone}`;
+

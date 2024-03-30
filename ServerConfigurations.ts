@@ -1,7 +1,7 @@
-import { ServerConfigMapping, ServerConfiguration } from '@core/baseServer/core/types/ServerConfiguration';
+import { ServerConfigMapping, ServerConfiguration } from '@core/baseServer/types/ServerConfiguration';
 
 
-type ApplicableSystems = 'trader' | 'preprocessor' | 'postprocessor';
+export type ApplicableSystems = 'trader' | 'preprocessor' | 'postprocessor';
 
 export const systems: { [server in ApplicableSystems]: ServerConfiguration<server> } = {
   trader: {
