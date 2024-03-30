@@ -5,11 +5,9 @@ import { BaseRoute } from '@core/baseServer/types/RouteMappings';
 /*
   Global Route Mapping
 
-  Single Source of truth for all routes, with all subRoutes and custom Logs defined here
-
-  Can have multiple routeMappings per project
-
-  Base project will always have a poll route for health checks
+  Single Source of truth for all routes, with all subRoutes and custom Logs defined here.
+  Can have multiple routeMappings per project.
+  Base project will always have a poll route for health checks.
 */
 
 

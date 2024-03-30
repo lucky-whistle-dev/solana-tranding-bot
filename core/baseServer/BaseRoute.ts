@@ -1,4 +1,5 @@
 import { Response, Router, Request, NextFunction } from 'express';
+import { join } from 'path';
 
 
 /*
@@ -7,10 +8,14 @@ import { Response, Router, Request, NextFunction } from 'express';
 
 
 export abstract class BaseRoute {
-  protected name: string;
-  protected router: Router;
-  
-  constructor(protected rootpath: string) { this.router = Router(); }
+  protected _router: Router;
+
+  constructor(protected _rootpath: string) { this._router = Router(); }
+
+  get router() { return this._router };
+  get rootpath() { return this._rootpath; }
+
+  protected mergeBaseRoutePath = (prefix: string, suffix: string) => join(prefix, suffix);
 
   protected async pipeRequest(opts: RouteOpts, req: Request, res: Response, next: NextFunction, params: any): Promise<boolean> {
     const validated = await this.validateRoute(req, res, next);

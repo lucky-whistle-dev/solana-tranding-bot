@@ -11,5 +11,5 @@ import { BaseServer } from '@core/baseServer/BaseServer';
 */
 export class InitBaseServer extends BaseServer<string> {
   initService = async (): Promise<boolean> => true;
-  startEventListeners = async (): Promise<void> => null;
+  startEventListeners = async () => null;
 }

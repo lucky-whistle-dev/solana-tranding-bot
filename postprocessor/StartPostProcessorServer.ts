@@ -2,10 +2,7 @@ import { serverConfiguration } from '../ServerConfigurations';
 import { PostProcessorServer } from '@postprocessor/PostProcessorServer';
 
 
-const server = new PostProcessorServer(
-  serverConfiguration.basePath,
-  serverConfiguration.systems.postprocessor
-);
+const server = new PostProcessorServer(serverConfiguration.systems.postprocessor);
 
 try {
   server.startServer();

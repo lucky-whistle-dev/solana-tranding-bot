@@ -2,10 +2,7 @@ import { serverConfiguration } from '../ServerConfigurations';
 import { TraderServer } from '@trader/TraderServer';
 
 
-const server = new TraderServer(
-  serverConfiguration.basePath,
-  serverConfiguration.systems.trader
-);
+const server = new TraderServer(serverConfiguration.systems.trader);
 
 try {
   server.startServer();

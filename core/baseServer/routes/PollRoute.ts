@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { LogProvider } from '@core/providers/LogProvider';
-import { BaseRoute } from '@core/baseServer/BaseRoute';
-
+import { BaseRoute, RouteOpts } from '@core/baseServer/BaseRoute';
 import { routeMappings } from '@core/baseServer/configs/RouteMappings';
 
 
@@ -12,6 +11,7 @@ import { routeMappings } from '@core/baseServer/configs/RouteMappings';
 */
 export class PollRoute extends BaseRoute {
   private log: LogProvider = new LogProvider(PollRoute.name);
+
   constructor(rootpath: string) {
     super(rootpath);
     this.router.get(routeMappings.poll.subRouteMappings.root.name, this.poll.bind(this));
@@ -23,5 +23,5 @@ export class PollRoute extends BaseRoute {
   }
 
   validateRoute = async (req: Request, res: Response, next: NextFunction): Promise<boolean> => true;
-  performRouteAction = async (opts, req: Request, res: Response, next: NextFunction): Promise<void> => null;
+  performRouteAction = async (opts: RouteOpts, req: Request, res: Response, next: NextFunction) => null;
 }

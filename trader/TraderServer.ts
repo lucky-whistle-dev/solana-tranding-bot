@@ -15,7 +15,7 @@ import { ServerConfiguration } from '@core/baseServer/types/ServerConfiguration'
 
 
 export class TraderServer extends BaseServer<ApplicableSystems> {
-  constructor(private basePath: string, opts: ServerConfiguration<ApplicableSystems>) { 
+  constructor(opts: ServerConfiguration<ApplicableSystems>) { 
     super(opts); 
   }
 
